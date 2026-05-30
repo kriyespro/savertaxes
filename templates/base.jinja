@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth" x-data="{ darkMode: localStorage.getItem('darkMode') === 'true', mobileMenu: false, searchOpen: false }" x-bind:class="{ 'dark': darkMode }">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{{ meta_title | default('TaxSaver India — Free Tax Calculators FY 2025-26') }}{% endblock %}</title>
+  <meta name="description" content="{{ meta_description | default('Free income tax calculators, GST tools, and expert guides for India FY 2025-26.') }}">
+  <link rel="canonical" href="{{ canonical_url | default(request.build_absolute_uri()) }}">
+
+  {# Open Graph #}
+  <meta property="og:title" content="{{ meta_title | default('TaxSaver India') }}">
+  <meta property="og:description" content="{{ meta_description | default('') }}">
+  <meta property="og:type" content="{{ og_type | default('website') }}">
+  <meta property="og:url" content="{{ request.build_absolute_uri() }}">
+  <meta property="og:image" content="{{ og_image | default(static('img/og-default.png')) }}">
+  <meta property="og:site_name" content="TaxSaver India">
+  <meta name="twitter:card" content="summary_large_image">
+
+  {# Styles #}
+  <link rel="stylesheet" href="{{ static('css/output.css') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  {# Schema JSON-LD #}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "TaxSaver India",
+    "url": "{{ request.scheme }}://{{ request.get_host() }}"
+  }
+  </script>
+  {% block schema %}{% endblock %}
+
+  {# hreflang — market-aware #}
+  {% set _base_url = request.scheme + '://' + request.get_host() %}
+  {% if request.market == 'us' %}
+  <link rel="alternate" hreflang="en-US" href="{{ _base_url }}{{ request.path }}">
+  <link rel="alternate" hreflang="en-IN" href="{{ _base_url }}/{{ request.path.lstrip('/').replace('us/', '', 1) }}">
+  {% else %}
+  <link rel="alternate" hreflang="en-IN" href="{{ _base_url }}{{ request.path }}">
+  <link rel="alternate" hreflang="en-US" href="{{ _base_url }}/us/">
+  {% endif %}
+  <link rel="alternate" hreflang="x-default" href="{{ _base_url }}/">
+
+  {# PWA #}
+  <link rel="manifest" href="{{ static('manifest.json') }}">
+  <meta name="theme-color" content="#1A3A5C">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="{{ 'TaxSaver USA' if request.market == 'us' else 'TaxSaver India' }}">
+
+  {# AdSense — only loads when approved + enabled #}
+  {% if ADSENSE_ENABLED and ADSENSE_CLIENT_ID %}
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={{ ADSENSE_CLIENT_ID }}"
+          crossorigin="anonymous"></script>
+  {% endif %}
+
+  {# Alpine.js — load before body #}
+  <script defer src="{{ static('js/alpine.min.js') }}"></script>
+</head>
+<body class="bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-gray-100 font-inter antialiased">
+
+  {# Skip to content — accessibility #}
+  <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-white focus:rounded">Skip to content</a>
+
+  {# ── Navigation ─────────────────────────────────────────────── #}
+  <header class="sticky top-0 z-40 bg-white dark:bg-gray-900 shadow-sm border-b border-gray-200 dark:border-gray-800">
+    <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+
+        {# Logo — adapts to market #}
+        {% set _market = request.market | default('us') %}
+        <a href="{{ '/' if _market == 'us' else '/in/' }}"
+           class="flex items-center gap-2 font-bold text-xl text-primary dark:text-white">
+          <span class="text-accent">{{ '$' if _market == 'us' else '₹' }}</span>TaxSaver {{ 'USA' if _market == 'us' else 'India' }}
+        </a>
+
+        {# Desktop nav — market-aware #}
+        <div class="hidden lg:flex items-center gap-6 text-sm font-medium">
+          {% if _market == 'us' %}
+            <a href="{{ url('tools:index') }}" class="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-white transition-colors">Tools</a>
+            <a href="{{ url('blog:index') }}" class="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-white transition-colors">Blog</a>
+            <a href="{{ url('pages:about') }}" class="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-white transition-colors">About</a>
+          {% else %}
+            <a href="/in/tools/" class="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-white transition-colors">Tools</a>
+            <a href="/in/blog/" class="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-white transition-colors">Blog</a>
+            <a href="/in/gst/" class="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-white transition-colors">GST</a>
+            <a href="/in/state-tax/" class="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-white transition-colors">State Tax</a>
+            <a href="{{ url('pages:budget_2025') }}" class="text-accent font-semibold hover:text-orange-600 transition-colors">Budget 2025</a>
+            <a href="{{ url('pages:about') }}" class="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-white transition-colors">About</a>
+          {% endif %}
+        </div>
+
+        {# Right: market switcher + search + dark mode + mobile toggle #}
+        <div class="flex items-center gap-3">
+          {# Market flag switcher #}
+          {% if _market == 'us' %}
+          <a href="{{ url('pages:set_market') }}?market=india&next=/"
+             title="Switch to India"
+             class="flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:border-primary transition-colors">
+            🇮🇳 India
+          </a>
+          {% else %}
+          <a href="{{ url('pages:set_market') }}?market=us&next=/"
+             title="Switch to USA"
+             class="flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:border-primary transition-colors">
+            🇺🇸 USA
+          </a>
+          {% endif %}
+          {# Search button #}
+          <button @click="searchOpen = !searchOpen" class="p-2 text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-white" aria-label="Search">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+          </button>
+
+          {# Dark mode toggle #}
+          <button @click="darkMode = !darkMode; localStorage.setItem('darkMode', darkMode)"
+                  class="p-2 text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-white" aria-label="Toggle dark mode">
+            <svg x-show="!darkMode" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+            </svg>
+            <svg x-show="darkMode" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+            </svg>
+          </button>
+
+          {# Mobile menu button #}
+          <button @click="mobileMenu = !mobileMenu" class="lg:hidden p-2 text-gray-500" aria-label="Menu">
+            <svg x-show="!mobileMenu" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+            <svg x-show="mobileMenu" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      {# Mobile menu — market-aware #}
+      <div x-show="mobileMenu" x-transition class="lg:hidden border-t border-gray-200 dark:border-gray-800 py-3 space-y-1">
+        {% if _market == 'us' %}
+          <a href="{{ url('tools:index') }}" class="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg">Tools</a>
+          <a href="{{ url('blog:index') }}" class="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg">Blog</a>
+        {% else %}
+          <a href="/in/tools/" class="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg">Tools</a>
+          <a href="/in/blog/" class="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg">Blog</a>
+          <a href="/in/gst/" class="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg">GST</a>
+          <a href="/in/state-tax/" class="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg">State Tax</a>
+          <a href="{{ url('pages:budget_2025') }}" class="block px-3 py-2 text-accent font-semibold hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg">Budget 2025</a>
+        {% endif %}
+        <a href="{{ url('pages:about') }}" class="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg">About</a>
+        <div class="border-t border-gray-200 dark:border-gray-800 pt-2 mt-2">
+          {% if _market == 'us' %}
+          <a href="{{ url('pages:set_market') }}?market=india&next=/in/"
+             class="block px-3 py-2 text-gray-500 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg">🇮🇳 Switch to India</a>
+          {% else %}
+          <a href="{{ url('pages:set_market') }}?market=us&next=/"
+             class="block px-3 py-2 text-gray-500 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg">🇺🇸 Switch to USA</a>
+          {% endif %}
+        </div>
+      </div>
+    </nav>
+
+    {# Search bar — drops below nav when open #}
+    <div x-show="searchOpen" x-transition class="border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 px-4 py-3">
+      <input type="search" name="q" placeholder="Search tools, articles..."
+             class="w-full max-w-2xl mx-auto block px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary text-sm"
+             hx-get="{{ url('pages:search') }}"
+             hx-trigger="keyup changed delay:300ms"
+             hx-target="#search-results"
+             hx-swap="innerHTML"
+             autocomplete="off">
+      <div id="search-results" class="max-w-2xl mx-auto mt-2"></div>
+    </div>
+  </header>
+
+  {# ── Main Content ──────────────────────────────────────────── #}
+  <main id="main-content">
+    {% block content %}{% endblock %}
+  </main>
+
+  {# ── Footer ────────────────────────────────────────────────── #}
+  <footer class="bg-gray-900 dark:bg-gray-950 text-gray-300 mt-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div class="col-span-1 md:col-span-2">
+          <p class="text-xl font-bold text-white mb-2"><span class="text-accent">₹</span>TaxSaver India</p>
+          <p class="text-sm text-gray-400 max-w-sm">Free income tax calculators, GST tools, and expert guides for Indian taxpayers. Updated for FY {{ CURRENT_FY }}.</p>
+          <p class="text-xs text-gray-500 mt-3">Results are estimates only. Not tax/CA advice. Consult a Chartered Accountant for your specific situation.</p>
+        </div>
+        <div>
+          <h3 class="text-white font-semibold mb-3 text-sm uppercase tracking-wide">Popular Tools</h3>
+          <ul class="space-y-2 text-sm">
+            <li><a href="{{ url('tools:detail', args=['old-vs-new-tax-regime']) }}" class="hover:text-white transition-colors">Old vs New Regime</a></li>
+            <li><a href="{{ url('tools:detail', args=['income-tax-calculator']) }}" class="hover:text-white transition-colors">Income Tax Calculator</a></li>
+            <li><a href="{{ url('tools:detail', args=['hra-exemption-calculator']) }}" class="hover:text-white transition-colors">HRA Calculator</a></li>
+            <li><a href="{{ url('tools:detail', args=['gst-calculator']) }}" class="hover:text-white transition-colors">GST Calculator</a></li>
+            <li><a href="{{ url('tools:detail', args=['advance-tax-calculator']) }}" class="hover:text-white transition-colors">Advance Tax</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-white font-semibold mb-3 text-sm uppercase tracking-wide">Quick Links</h3>
+          <ul class="space-y-2 text-sm">
+            <li><a href="{{ url('blog:index') }}" class="hover:text-white transition-colors">Blog</a></li>
+            <li><a href="{{ url('states:index') }}" class="hover:text-white transition-colors">State Tax</a></li>
+            <li><a href="{{ url('pages:about') }}" class="hover:text-white transition-colors">About</a></li>
+            <li><a href="{{ url('pages:contact') }}" class="hover:text-white transition-colors">Contact</a></li>
+            <li><a href="{{ url('pages:privacy') }}" class="hover:text-white transition-colors">Privacy Policy</a></li>
+            <li><a href="{{ url('pages:disclaimer') }}" class="hover:text-white transition-colors">Disclaimer</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t border-gray-800 mt-8 pt-6 flex flex-col sm:flex-row justify-between items-center text-xs text-gray-500">
+        <p>© 2025 TaxSaver India. All rights reserved.</p>
+        <p class="mt-2 sm:mt-0">Tax data based on Income Tax Act. Updated {{ CURRENT_FY }}.</p>
+      </div>
+    </div>
+  </footer>
+
+  {# HTMX #}
+  <script src="{{ static('js/htmx.min.js') }}"></script>
+
+  {# Chart.js — only on pages that need it #}
+  {% block extra_scripts %}{% endblock %}
+
+  {# PWA service worker #}
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('{{ static("js/sw.js") }}').catch(function(){});
+    }
+  </script>
+
+  {# GA4 #}
+  {% if GA_ID %}
+  <script async src="https://www.googletagmanager.com/gtag/js?id={{ GA_ID }}"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', '{{ GA_ID }}');
+  </script>
+  {% endif %}
+</body>
+</html>

@@ -1,0 +1,18 @@
+{# T24 — EPF Maturity Calculator #}
+<div class="space-y-5">
+  <div>
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Monthly Basic Salary + DA</label>
+    <div class="relative"><span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium">₹</span>
+      <input type="number" name="basic_salary" placeholder="e.g. 45000" min="0" inputmode="numeric" class="w-full pl-8 pr-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary text-sm">
+    </div>
+  </div>
+  <div>
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Years of Service</label>
+    <input type="number" name="years" placeholder="10" min="1" max="40" inputmode="numeric" class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary text-sm">
+  </div>
+  <div>
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">EPF Interest Rate (%)</label>
+    <input type="number" name="epf_rate" placeholder="8.25" min="1" max="15" step="0.05" inputmode="decimal" class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary text-sm">
+    <p class="text-xs text-gray-400 mt-1">Current EPF rate: 8.25% p.a. (FY 2023-24)</p>
+  </div>
+</div>

@@ -1,0 +1,48 @@
+<div class="space-y-4">
+  <div>
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Gross Annual Income (W-2 Box 1)</label>
+    <div class="relative">
+      <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-semibold">$</span>
+      <input type="number" name="gross_income" min="0" step="1000" value="65000" inputmode="numeric"
+             class="w-full pl-7 pr-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary text-sm">
+    </div>
+  </div>
+
+  <div>
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Total Federal Tax Withheld (W-2 Box 2)</label>
+    <div class="relative">
+      <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-semibold">$</span>
+      <input type="number" name="total_withholding" min="0" step="100" value="8000" inputmode="numeric"
+             class="w-full pl-7 pr-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary text-sm">
+    </div>
+    <p class="text-xs text-gray-400 mt-1">Include all employers if you had multiple W-2s</p>
+  </div>
+
+  <div>
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Filing Status</label>
+    <select name="filing_status" class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary text-sm">
+      <option value="single">Single</option>
+      <option value="married_jointly">Married Filing Jointly</option>
+      <option value="married_separately">Married Filing Separately</option>
+      <option value="head_of_household">Head of Household</option>
+    </select>
+  </div>
+
+  <div>
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Deduction Type</label>
+    <select name="deduction_type" class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary text-sm">
+      <option value="standard">Standard Deduction</option>
+      <option value="itemized">Itemized</option>
+    </select>
+  </div>
+
+  <div>
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Qualifying Children</label>
+    <select name="num_children" class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary text-sm">
+      <option value="0">0</option>
+      <option value="1">1 ($2,000 Child Tax Credit)</option>
+      <option value="2">2 ($4,000 CTC)</option>
+      <option value="3">3 ($6,000 CTC)</option>
+    </select>
+  </div>
+</div>

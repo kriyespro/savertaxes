@@ -1,0 +1,16 @@
+{% if ADSENSE_ENABLED and ADSENSE_CLIENT_ID %}
+{#
+  slot_id: AdSense ad slot ID (required)
+  format: 'auto' (default) | 'rectangle' | 'leaderboard'
+  class_: extra wrapper CSS classes
+#}
+<div class="adsense-wrapper {{ class_ | default('') }} my-4 text-center">
+  <ins class="adsbygoogle"
+       style="display:block"
+       data-ad-client="{{ ADSENSE_CLIENT_ID }}"
+       data-ad-slot="{{ slot_id }}"
+       data-ad-format="{{ format | default('auto') }}"
+       data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+</div>
+{% endif %}

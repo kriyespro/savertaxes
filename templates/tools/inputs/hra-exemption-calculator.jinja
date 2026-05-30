@@ -1,0 +1,37 @@
+{# T04 — HRA Exemption Calculator #}
+<div class="space-y-5">
+  {% for name, label, placeholder, hint in [
+    ('basic_salary', 'Basic Salary (Annual)', '600000', 'Your annual basic salary from salary slip'),
+    ('hra_received', 'HRA Received (Annual)', '300000', 'Annual HRA component from salary'),
+    ('annual_rent', 'Annual Rent Paid', '240000', 'Total rent paid in FY (only if actually paying rent)'),
+  ] %}
+  <div>
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ label }}</label>
+    <div class="relative">
+      <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium">₹</span>
+      <input type="number" name="{{ name }}" placeholder="{{ placeholder }}" min="0" inputmode="numeric"
+             class="w-full pl-8 pr-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary text-sm">
+    </div>
+    <p class="text-xs text-gray-400 mt-1">{{ hint }}</p>
+  </div>
+  {% endfor %}
+  <div>
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">City Type</label>
+    <div class="grid grid-cols-2 gap-3">
+      <label class="flex items-center gap-2 p-3 rounded-xl border border-gray-300 dark:border-gray-600 cursor-pointer has-[:checked]:border-primary has-[:checked]:bg-primary/5">
+        <input type="radio" name="is_metro" value="true" checked class="text-primary">
+        <div>
+          <p class="text-sm font-medium text-gray-900 dark:text-white">Metro City</p>
+          <p class="text-xs text-gray-400">Delhi, Mumbai, Kolkata, Chennai</p>
+        </div>
+      </label>
+      <label class="flex items-center gap-2 p-3 rounded-xl border border-gray-300 dark:border-gray-600 cursor-pointer has-[:checked]:border-primary has-[:checked]:bg-primary/5">
+        <input type="radio" name="is_metro" value="false" class="text-primary">
+        <div>
+          <p class="text-sm font-medium text-gray-900 dark:text-white">Non-Metro</p>
+          <p class="text-xs text-gray-400">All other cities</p>
+        </div>
+      </label>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,234 @@
+{% extends "base.jinja" %}
+
+{% block schema %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "{{ state.name }} Income Tax Guide FY 2025-26",
+  "description": "{{ state.meta_description }}",
+  "url": "{{ request.build_absolute_uri() }}"
+}
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+  {# Breadcrumb #}
+  <nav class="text-sm text-gray-500 dark:text-gray-400 mb-4" aria-label="Breadcrumb">
+    <ol class="flex items-center gap-2 flex-wrap">
+      <li><a href="{{ url('pages:home') }}" class="hover:text-primary">Home</a></li>
+      <li>/</li>
+      <li><a href="{{ url('states:index') }}" class="hover:text-primary">State Tax</a></li>
+      <li>/</li>
+      <li class="text-gray-900 dark:text-white font-medium">{{ state.name }}</li>
+    </ol>
+  </nav>
+
+  {# Header #}
+  <div class="mb-6">
+    <div class="flex flex-wrap items-center gap-2 mb-3">
+      <span class="inline-flex items-center gap-1 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 text-xs font-medium px-3 py-1 rounded-full">
+        ✓ Updated FY 2025-26
+      </span>
+      <span class="text-xs font-mono bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 px-2 py-1 rounded">GST Code: {{ state.gst_state_code }}</span>
+    </div>
+    <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+      {{ state.name }} Income Tax Calculator & Professional Tax FY 2025-26
+    </h1>
+    <p class="text-gray-600 dark:text-gray-400">{{ state.special_notes }}</p>
+  </div>
+
+  {# Central income tax note #}
+  <div class="bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-800 rounded-xl p-4 mb-6 text-sm text-blue-800 dark:text-blue-300">
+    <strong>Note:</strong> Income tax is uniform across all Indian states — governed by the central Income Tax Act. Use the calculator below to compute your federal income tax. The only state-specific tax is <strong>Professional Tax</strong>.
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+    {# Left: Income Tax Calculator embed #}
+    <div class="lg:col-span-2 space-y-6">
+
+      {# Embedded Income Tax Calculator #}
+      <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6">
+        <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Income Tax Calculator — {{ state.name }} (FY 2025-26)</h2>
+
+        <form hx-post="{{ url('tools:calculate', args=['income-tax-calculator']) }}"
+              hx-target="#state-calc-result"
+              hx-swap="innerHTML"
+              hx-trigger="change from:input, change from:select"
+              hx-indicator="#state-spinner">
+          {{ csrf_input }}
+          <input type="hidden" name="fy" value="2025-26">
+
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Annual Income</label>
+              <div class="relative">
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium">₹</span>
+                <input type="number" name="income" placeholder="e.g. 1200000" min="0" inputmode="numeric"
+                       class="w-full pl-8 pr-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary text-sm">
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tax Regime</label>
+                <select name="regime" class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary text-sm">
+                  <option value="new">New Regime</option>
+                  <option value="old">Old Regime</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Age Group</label>
+                <select name="age_group" class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary text-sm">
+                  <option value="below_60">Below 60</option>
+                  <option value="60_to_79">60–79 (Senior)</option>
+                  <option value="80_plus">80+ (Super Senior)</option>
+                </select>
+              </div>
+            </div>
+            <div id="state-spinner" class="htmx-indicator flex items-center gap-2 text-sm text-primary">
+              <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+              </svg>
+              Calculating...
+            </div>
+          </div>
+        </form>
+
+        <div id="state-calc-result" class="mt-4">
+          <p class="text-sm text-gray-400 text-center py-4">Enter income above to calculate</p>
+        </div>
+      </div>
+
+      {# Professional Tax Section #}
+      <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6">
+        <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Professional Tax — {{ state.name }}</h2>
+
+        {% if state.has_professional_tax %}
+          {% set slabs = state.prof_tax_slabs_json | from_json %}
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="bg-gray-50 dark:bg-gray-700 text-left">
+                  <th class="px-4 py-3 font-semibold text-gray-700 dark:text-gray-300 rounded-l-lg">Monthly Salary</th>
+                  <th class="px-4 py-3 font-semibold text-gray-700 dark:text-gray-300">Monthly PT</th>
+                  <th class="px-4 py-3 font-semibold text-gray-700 dark:text-gray-300 rounded-r-lg">Annual PT</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                {% set prev = 0 %}
+                {% for slab in slabs %}
+                <tr class="text-gray-600 dark:text-gray-400">
+                  <td class="px-4 py-3">
+                    {% if slab.up_to %}
+                      ₹{{ prev | inr_no_symbol }} – ₹{{ slab.up_to | inr_no_symbol }}
+                    {% else %}
+                      Above ₹{{ prev | inr_no_symbol }}
+                    {% endif %}
+                  </td>
+                  <td class="px-4 py-3 font-medium {% if slab.monthly_tax == 0 %}text-green-600 dark:text-green-400{% endif %}">
+                    {% if slab.monthly_tax == 0 %}Nil{% else %}₹{{ slab.monthly_tax }}{% endif %}
+                  </td>
+                  <td class="px-4 py-3 font-medium">
+                    {% if slab.monthly_tax == 0 %}Nil{% else %}₹{{ slab.monthly_tax * 12 }}{% endif %}
+                  </td>
+                </tr>
+                {% set prev = slab.up_to or prev %}
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          <p class="text-xs text-gray-400 mt-3">
+            * Professional Tax is deducted by the employer from your salary and deposited to the state government. It is deductible under Section 16 of the Income Tax Act.
+          </p>
+        {% else %}
+          <div class="flex items-start gap-3 bg-green-50 dark:bg-green-900/10 border border-green-200 dark:border-green-800 rounded-xl p-4">
+            <span class="text-green-500 text-xl">✓</span>
+            <div>
+              <p class="font-medium text-green-700 dark:text-green-400">{{ state.name }} does not levy Professional Tax</p>
+              <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Residents of {{ state.name }} are not required to pay professional tax. Only central income tax and GST apply.</p>
+            </div>
+          </div>
+        {% endif %}
+      </div>
+
+      {# PT deductibility note #}
+      {% if state.has_professional_tax %}
+      <div class="bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800 rounded-xl p-4 text-sm text-amber-800 dark:text-amber-300">
+        <strong>Tax Tip:</strong> Professional tax paid is deductible under Section 16(iii) of the Income Tax Act in the old regime. This reduces your taxable income by the PT amount (max ₹2,500/year).
+      </div>
+      {% endif %}
+
+    </div>
+
+    {# Sidebar #}
+    <aside class="space-y-5">
+
+      {# Quick Facts #}
+      <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-5">
+        <h3 class="font-semibold text-gray-900 dark:text-white text-sm mb-4">{{ state.name }} Tax Facts</h3>
+        <div class="space-y-3 text-sm">
+          <div class="flex justify-between">
+            <span class="text-gray-500 dark:text-gray-400">GST State Code</span>
+            <span class="font-medium text-gray-900 dark:text-white">{{ state.gst_state_code }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-500 dark:text-gray-400">Professional Tax</span>
+            <span class="font-medium {% if state.has_professional_tax %}text-orange-600 dark:text-orange-400{% else %}text-green-600 dark:text-green-400{% endif %}">
+              {{ 'Applicable' if state.has_professional_tax else 'Not Applicable' }}
+            </span>
+          </div>
+          {% if state.has_professional_tax %}
+            {% set slabs = state.prof_tax_slabs_json | from_json %}
+            {% set max_pt = slabs[-1].monthly_tax if slabs else 0 %}
+          <div class="flex justify-between">
+            <span class="text-gray-500 dark:text-gray-400">Max Monthly PT</span>
+            <span class="font-medium text-gray-900 dark:text-white">₹{{ max_pt }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-500 dark:text-gray-400">Max Annual PT</span>
+            <span class="font-medium text-gray-900 dark:text-white">₹{{ max_pt * 12 }}</span>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      {# CA Lead CTA #}
+      <div class="bg-primary/5 dark:bg-primary/10 border border-primary/20 rounded-2xl p-5">
+        <p class="text-sm font-semibold text-gray-900 dark:text-white mb-1">Need CA help in {{ state.name }}?</p>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">Get expert advice from a local Chartered Accountant</p>
+        <a href="{{ url('pages:contact') }}"
+           class="block text-center bg-primary hover:bg-primary-light text-white text-sm font-medium px-4 py-2.5 rounded-lg transition-colors">
+          Find a CA →
+        </a>
+      </div>
+
+      {# Related tools #}
+      <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-5">
+        <h3 class="font-semibold text-gray-900 dark:text-white text-sm mb-4">Related Calculators</h3>
+        <ul class="space-y-2 text-sm">
+          {% for slug, label in [('old-vs-new-tax-regime','Old vs New Regime'),('income-tax-calculator','Income Tax Calculator'),('advance-tax-calculator','Advance Tax'),('tds-on-salary-calculator','TDS on Salary'),('ctc-to-take-home','CTC to Take-Home')] %}
+          <li>
+            <a href="{{ url('tools:detail', args=[slug]) }}"
+               class="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-white transition-colors">
+              → {{ label }}
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      {# Other states #}
+      <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-5">
+        <h3 class="font-semibold text-gray-900 dark:text-white text-sm mb-3">Other States</h3>
+        <a href="{{ url('states:index') }}" class="text-sm text-primary hover:underline">View all 28 states →</a>
+      </div>
+
+    </aside>
+  </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,53 @@
+{# T14 — NPS Tax Benefit Calculator #}
+<div class="space-y-5">
+
+  <div>
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Annual Basic Salary</label>
+    <div class="relative">
+      <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium">₹</span>
+      <input type="number" name="basic_salary" placeholder="e.g. 600000" min="0" inputmode="numeric"
+             class="w-full pl-8 pr-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary text-sm">
+    </div>
+    <p class="text-xs text-gray-400 mt-1">Basic + DA salary per year (not CTC)</p>
+  </div>
+
+  <div>
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Your NPS Contribution (Annual)</label>
+    <div class="relative">
+      <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium">₹</span>
+      <input type="number" name="employee_nps" placeholder="e.g. 50000" min="0" inputmode="numeric"
+             class="w-full pl-8 pr-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary text-sm">
+    </div>
+    <p class="text-xs text-gray-400 mt-1">Your own NPS Tier-1 contribution. ₹50,000 gives max 80CCD(1B) benefit.</p>
+  </div>
+
+  <div>
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Employer NPS Contribution (% of Basic)</label>
+    <select name="employer_nps_pct" class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary text-sm">
+      <option value="0">0% — No employer NPS</option>
+      <option value="5">5% of basic</option>
+      <option value="10">10% of basic (max for private sector)</option>
+      <option value="14">14% of basic (central government)</option>
+    </select>
+    <p class="text-xs text-gray-400 mt-1">Employer NPS qualifies under 80CCD(2) — available even in New Regime</p>
+  </div>
+
+  <div>
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Other 80C Investments (Annual)</label>
+    <div class="relative">
+      <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium">₹</span>
+      <input type="number" name="other_80c" placeholder="e.g. 150000" min="0" max="150000" inputmode="numeric"
+             class="w-full pl-8 pr-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary text-sm">
+    </div>
+    <p class="text-xs text-gray-400 mt-1">EPF, ELSS, PPF, LIC etc. Combined with NPS within ₹1.5L limit.</p>
+  </div>
+
+  <div>
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Your Tax Bracket</label>
+    <select name="marginal_rate" class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary text-sm">
+      <option value="30">30% slab (income above ₹10L)</option>
+      <option value="20">20% slab (₹5L–₹10L)</option>
+      <option value="5">5% slab (₹2.5L–₹5L)</option>
+    </select>
+  </div>
+</div>

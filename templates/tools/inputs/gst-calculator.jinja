@@ -1,0 +1,41 @@
+{# T09 — GST Calculator #}
+<div class="space-y-5">
+  <div>
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Amount</label>
+    <div class="relative">
+      <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium">₹</span>
+      <input type="number" name="amount" placeholder="e.g. 10000" min="0" inputmode="decimal"
+             class="w-full pl-8 pr-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary text-sm">
+    </div>
+  </div>
+  <div>
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">GST Rate</label>
+    <div class="grid grid-cols-5 gap-2">
+      {% for rate in ['0', '5', '12', '18', '28'] %}
+      <label class="flex flex-col items-center p-3 rounded-xl border border-gray-300 dark:border-gray-600 cursor-pointer has-[:checked]:border-primary has-[:checked]:bg-primary/5 text-center">
+        <input type="radio" name="rate" value="{{ rate }}" {% if rate == '18' %}checked{% endif %} class="text-primary mb-1">
+        <span class="text-sm font-bold text-gray-900 dark:text-white">{{ rate }}%</span>
+      </label>
+      {% endfor %}
+    </div>
+  </div>
+  <div>
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Calculation Type</label>
+    <div class="grid grid-cols-2 gap-3">
+      <label class="flex items-center gap-2 p-3 rounded-xl border border-gray-300 dark:border-gray-600 cursor-pointer has-[:checked]:border-primary has-[:checked]:bg-primary/5">
+        <input type="radio" name="reverse" value="false" checked class="text-primary">
+        <div>
+          <p class="text-sm font-medium text-gray-900 dark:text-white">Add GST</p>
+          <p class="text-xs text-gray-400">Amount before GST</p>
+        </div>
+      </label>
+      <label class="flex items-center gap-2 p-3 rounded-xl border border-gray-300 dark:border-gray-600 cursor-pointer has-[:checked]:border-primary has-[:checked]:bg-primary/5">
+        <input type="radio" name="reverse" value="true" class="text-primary">
+        <div>
+          <p class="text-sm font-medium text-gray-900 dark:text-white">Reverse GST</p>
+          <p class="text-xs text-gray-400">Amount including GST</p>
+        </div>
+      </label>
+    </div>
+  </div>
+</div>

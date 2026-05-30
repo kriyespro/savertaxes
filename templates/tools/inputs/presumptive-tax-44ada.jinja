@@ -1,0 +1,17 @@
+{# T12 — 44ADA Presumptive Tax Calculator #}
+<div class="space-y-5">
+  <div class="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4 text-xs text-blue-700 dark:text-blue-400">
+    <p class="font-semibold">Section 44ADA — Presumptive Taxation for Professionals</p>
+    <p class="mt-1">For CAs, doctors, lawyers, engineers, consultants with gross receipts up to ₹75 lakhs. 50% of gross receipts assumed as income — no expense tracking needed.</p>
+  </div>
+  <div>
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Gross Professional Receipts (Annual)</label>
+    <div class="relative">
+      <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium">₹</span>
+      <input type="number" name="gross_receipts" placeholder="e.g. 2000000" min="0" max="7500000"
+             inputmode="numeric"
+             class="w-full pl-8 pr-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary text-sm">
+    </div>
+    <p class="text-xs text-gray-400 mt-1">Total fees/income received. Limit: ₹75,00,000 per year.</p>
+  </div>
+</div>

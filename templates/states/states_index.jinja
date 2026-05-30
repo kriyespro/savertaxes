@@ -1,0 +1,20 @@
+{% extends "base.jinja" %}
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">State Tax Guide — India</h1>
+  <p class="text-gray-600 dark:text-gray-400 mb-8">Professional tax slabs and income tax info for all Indian states FY {{ CURRENT_FY }}.</p>
+  <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+    {% for state in states %}
+    <a href="{{ state.get_absolute_url() }}"
+       class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-primary hover:shadow-md transition-all p-4">
+      <p class="font-semibold text-sm text-gray-900 dark:text-white">{{ state.name }}</p>
+      <p class="text-xs text-gray-400 mt-1">{{ state.abbr }}</p>
+    </a>
+    {% else %}
+    <div class="col-span-4 py-12 text-center text-gray-400">
+      States coming soon. <a href="/sd/" class="text-primary underline">Add via admin</a>.
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,31 @@
+{# T22 — Mutual Fund Tax #}
+<div class="space-y-5">
+  <div>
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fund Type</label>
+    <select name="fund_type" class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary text-sm">
+      <option value="equity">Equity Fund (equity > 65%)</option>
+      <option value="debt">Debt Fund / Hybrid (equity < 65%)</option>
+    </select>
+  </div>
+  <div class="grid grid-cols-2 gap-4">
+    <div>
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Amount Invested</label>
+      <div class="relative"><span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium">₹</span>
+        <input type="number" name="invested" placeholder="e.g. 500000" min="0" inputmode="numeric" class="w-full pl-8 pr-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary text-sm">
+      </div>
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Current Value</label>
+      <div class="relative"><span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium">₹</span>
+        <input type="number" name="current_value" placeholder="e.g. 700000" min="0" inputmode="numeric" class="w-full pl-8 pr-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary text-sm">
+      </div>
+    </div>
+  </div>
+  <div>
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Holding Period</label>
+    <select name="holding_months" class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary text-sm">
+      <option value="6">Less than 12 months (STCG)</option>
+      <option value="18">12 months or more (LTCG)</option>
+    </select>
+  </div>
+</div>

@@ -1,0 +1,15 @@
+{% extends "base.jinja" %}
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">GST Calculators & Tools</h1>
+  <p class="text-gray-600 dark:text-gray-400 mb-8">Free GST calculator, registration checker and GST guides for India.</p>
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <a href="{{ url('tools:detail', args=['gst-calculator']) }}"
+       class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-primary hover:shadow-lg transition-all p-6">
+      <h2 class="font-semibold text-gray-900 dark:text-white mb-2">GST Calculator</h2>
+      <p class="text-sm text-gray-500 dark:text-gray-400">Calculate GST on any amount at 5%, 12%, 18%, or 28%. Add or reverse GST instantly.</p>
+      <p class="mt-4 text-sm text-primary font-medium">Calculate →</p>
+    </a>
+  </div>
+</div>
+{% endblock %}

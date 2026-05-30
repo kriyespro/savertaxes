@@ -1,0 +1,710 @@
+================================================================================
+TAXESSAVER.COM — DEVELOPMENT ROADMAP (PHASE BY PHASE)
+Full-Stack Plan: Mobile-First, SEO-Optimized, Fast, Beautiful UI
+Date: 2026-05-28
+================================================================================
+
+TECH STACK DECISION
+  Framework:    Next.js 14+ (App Router) — SSG/ISR/SSR per route
+  Styling:      Tailwind CSS v3 + shadcn/ui components
+  Blog CMS:     Contentlayer + MDX (Git-based, zero cost, full control)
+  Charts:       Recharts (lightweight, responsive)
+  Hosting:      Vercel (edge CDN, auto-SSL, easy deploys)
+  DNS/CDN:      Cloudflare (free tier, DDoS, extra speed layer)
+  Analytics:    GA4 + Vercel Analytics
+  Email:        Resend.com (API) + ConvertKit (newsletter)
+  Search:       Pagefind (static search, zero cost) → Algolia when scaling
+  Error Track:  Sentry (free tier)
+  CI/CD:        GitHub → Vercel (auto deploy on push)
+  Domain:       taxessaver.com → Cloudflare DNS
+
+WHY THIS STACK:
+  Next.js SSG = content served as HTML from CDN = instant load + perfect SEO
+  Tailwind = no unused CSS = tiny bundle = fast paint
+  Contentlayer = type-safe MDX = editor writes MD file → auto-deployed
+  Vercel = free tier handles 100k/mo traffic, scales to millions
+
+================================================================================
+PHASE 0 — FOUNDATION SETUP
+Timeline: Week 1–2
+Goal: Dev environment, repo, domain, hosting ready. Zero features yet.
+================================================================================
+
+WEEK 1: Infrastructure
+  [ ] Register taxessaver.com (Namecheap or Cloudflare Registrar)
+  [ ] Set up Cloudflare account → point DNS
+  [ ] Create GitHub repo: taxessaver-web (private)
+  [ ] Initialize Next.js 14 project:
+        npx create-next-app@latest taxessaver --ts --tailwind --app --src-dir
+  [ ] Install core dependencies:
+        shadcn/ui, Contentlayer, next-mdx-remote, recharts, lucide-react,
+        next-sitemap, next-seo, zod, date-fns, clsx, tailwind-merge
+  [ ] Set up Tailwind config: custom colors, fonts, spacing scale
+  [ ] Set up Vercel project → connect GitHub → auto-deploy on push
+  [ ] Configure Cloudflare → Vercel (custom domain, SSL)
+  [ ] Set up GitHub Actions: Lighthouse CI check on every PR
+  [ ] Configure Sentry project + install @sentry/nextjs
+  [ ] Set up GA4 property → install next/script gtag
+  [ ] Create .env.local template (GA_ID, SENTRY_DSN, etc.)
+
+WEEK 2: Design System
+  [ ] Define color palette in tailwind.config.ts:
+        primary: #1A3A5C (dark navy), accent: #2ECC71 (green),
+        warn: #F39C12, bg: #F8F9FA, text: #1A1A2E
+  [ ] Set typography: Inter (body) + system font fallback
+  [ ] Build base components (Storybook optional):
+        Button (primary/secondary/ghost), Card, Badge, Input, Slider,
+        Select, Tooltip, Alert, Accordion, Tabs, Breadcrumb, Spinner
+  [ ] Build layout components:
+        Header (sticky, mobile hamburger), Footer, SidebarLayout,
+        FullWidthLayout, Prose (blog content)
+  [ ] Mobile-first breakpoints confirmed: 375px / 640px / 1024px / 1280px
+  [ ] Dark mode: next-themes + Tailwind dark: variant
+  [ ] Set up font loading: local Inter font → fastest FOUT-free option
+  [ ] Favicon, OG image template, manifest.json (PWA groundwork)
+  [ ] Accessibility: skip-to-content link, focus-visible ring styles
+
+DELIVERABLE: Blank Next.js site deployed to taxessaver.com with design system
+
+================================================================================
+PHASE 1 — MVP LAUNCH
+Timeline: Week 3–7 (5 weeks)
+Goal: 10 core tools + 10 articles + homepage + all SEO basics live.
+      Start indexing now — SEO takes time.
+================================================================================
+
+WEEK 3: Tax Data Engine
+
+  [ ] Create /src/lib/taxData/ directory structure:
+        federal/
+          brackets-2024.ts
+          brackets-2025.ts
+          standardDeduction.ts
+          credits.ts
+        state/
+          CA.ts / NY.ts / TX.ts ... (all 50)
+        utils.ts (applyBrackets(), calcSETax(), etc.)
+
+  [ ] Implement core calculation library (pure TypeScript, no deps):
+        calculateFederalTax(income, filingStatus, year) → {tax, effective, marginal}
+        calculateSETax(netProfit) → {seTax, deductibleHalf}
+        calculateStateTax(income, state, filingStatus, year)
+        calculateStandardDeduction(filingStatus, year, age)
+        applyChildTaxCredit(income, dependents, filingStatus)
+        calculateCapitalGains(shortTerm, longTerm, income, filingStatus, year)
+
+  [ ] Write unit tests for all functions (Jest):
+        Test against IRS published examples
+        Test edge cases: $0 income, $1M income, married vs single
+
+  [ ] Create shared calculator hook: useCalculator(fn, inputs) → {result, error}
+  [ ] URL state serialization: useSearchParams → encode inputs → shareable URL
+
+WEEK 4: First 10 Tools (Build 2/day)
+
+  Tool page template at /tools/[slug]/page.tsx:
+    - Static metadata export (title, description, schema)
+    - ToolLayout component (tool left, explanation right on desktop)
+    - Tool component (inputs + results)
+    - Related tools section
+    - FAQ section (target featured snippets)
+    - Related articles section
+
+  Tools to build:
+  [ ] T01 — Federal Income Tax Calculator
+  [ ] T02 — Tax Bracket Visualizer
+  [ ] T05 — Tax Refund Estimator
+  [ ] T04 — Paycheck Calculator (gross → net)
+  [ ] T09 — Self-Employment Tax Calculator
+  [ ] T10 — Quarterly Estimated Tax Calculator
+  [ ] T17 — Standard vs Itemized Comparison
+  [ ] T18 — Child Tax Credit Calculator
+  [ ] T20 — Earned Income Tax Credit Calculator
+  [ ] T26 — Capital Gains Tax Calculator
+
+  Each tool must have:
+  ✓ Real-time calculation (onChange, no submit)
+  ✓ Input validation + helpful error messages
+  ✓ Donut/bar chart result visualization
+  ✓ Plain-English "what this means" summary
+  ✓ Assumption disclosure (folded/expandable)
+  ✓ Tax year toggle (2024/2025)
+  ✓ Mobile: inputs stack vertically, chart below
+  ✓ JSON-LD: WebApplication schema
+  ✓ Print/Share result URL
+
+WEEK 5: Blog System + First 10 Articles
+
+  [ ] Set up Contentlayer:
+        defineDocumentType for Post:
+          fields: title, description, date, updated, author, category,
+                  tags, image, featured, draft, readingTime
+        Generate type-safe post objects at build time
+
+  [ ] Build blog components:
+        /blog/page.tsx — listing with category filter
+        /blog/[slug]/page.tsx — article page
+        ArticleHeader, ArticleMeta, ArticleBody, AuthorCard,
+        RelatedArticles, TOCDesktop (sticky), TOCMobile (drawer),
+        FAQAccordion, ToolEmbed (lazy load calculator in article),
+        NewsletterSignup (mid-article + end)
+
+  [ ] Write first 10 articles (2,000–3,000 words each):
+        [A01] "How Federal Income Tax Brackets Work in 2025" (T → T01)
+        [A02] "What Is Self-Employment Tax? (And How to Reduce It)" (T → T09)
+        [A03] "Standard Deduction vs Itemizing: Which Should You Choose?"
+        [A04] "How to Calculate Quarterly Estimated Taxes"
+        [A05] "Capital Gains Tax Rates 2025: What You Need to Know"
+        [A06] "15 Tax Deductions Freelancers Miss Every Year"
+        [A07] "W-4 Withholding: How to Avoid Owing Taxes in April"
+        [A08] "Earned Income Tax Credit 2025: Do You Qualify?"
+        [A09] "Home Office Deduction: Simplified vs Regular Method"
+        [A10] "Child Tax Credit 2025: Full Guide"
+
+  Each article must have:
+  ✓ Proper heading hierarchy (H1 → H2 → H3 only)
+  ✓ FAQPage schema (3–5 FAQ items)
+  ✓ HowTo schema where applicable
+  ✓ Internal link to related tool (min 2 per article)
+  ✓ "Last updated" date prominent
+  ✓ Author bio with credentials
+  ✓ "Reviewed by CPA" badge
+
+WEEK 6: Homepage + Core Pages
+
+  [ ] Homepage (/):
+        Hero: "Tax tools that actually make sense" + search bar
+        Situation cards: W2 / Freelancer / Business / Investor / Retiree
+        Popular Tools grid (6 tools, 3-col desktop, 2-col mobile, 1-col xs)
+        Tax Deadline countdown widget
+        Latest Articles (3 articles, 3-col → 1-col)
+        Trust bar: "50+ tools | 200k+ calculations | Updated for 2025"
+        Newsletter signup strip
+        Footer: links, legal, affiliate disclosure
+
+  [ ] /tools/ — Tools directory page
+        Category tabs: All / Income / Self-Employed / Investments / Retirement
+        Search filter (client-side)
+        Tool cards with ratings
+
+  [ ] /blog/ — Blog listing
+        Category pills, article cards, load-more (or pagination)
+
+  [ ] /about/ — Team, mission, E-E-A-T content
+  [ ] /contact/ — Email form (Formspree or Resend)
+  [ ] /disclaimer/ — Legal disclaimer
+  [ ] /privacy/ — Privacy policy
+  [ ] /terms/ — Terms of service
+  [ ] /affiliate-disclosure/ — FTC required
+
+WEEK 7: SEO Foundation + Launch Checklist
+
+  [ ] next-sitemap config:
+        Auto-generate sitemap.xml: all tool pages + blog posts + state pages
+        Submit to Google Search Console
+        Submit to Bing Webmaster Tools
+
+  [ ] Robots.txt: allow all content, block /api/, /_next/
+  [ ] Verify all pages have unique, optimized meta title + description
+  [ ] Verify Open Graph images on every page (og:image)
+  [ ] JSON-LD audit: every tool has WebApplication, every article has Article
+  [ ] Core Web Vitals check: run Lighthouse on 5 key pages, all > 90
+  [ ] Mobile usability: test on real iPhone + Android (BrowserStack)
+  [ ] Set up Google Search Console property → verify domain
+  [ ] Set up GA4 → custom events: tool_used, calculator_completed, article_read
+  [ ] Set up ConvertKit → lead magnet: "2025 Tax Deduction Checklist" PDF
+  [ ] Newsletter signup tested end-to-end
+  [ ] 404 page (helpful: search + popular tools)
+  [ ] Verify all affiliate links: nofollow + disclosure
+  [ ] Apply for Google AdSense (needs content live first)
+  [ ] LAUNCH: announce on Reddit r/personalfinance, r/tax, r/freelance
+
+DELIVERABLE: 10 tools + 10 articles + full site live + indexed + AdSense applied
+
+================================================================================
+PHASE 2 — CONTENT & TOOLS EXPANSION
+Timeline: Week 8–14 (7 weeks)
+Goal: 30 tools, 40 articles, programmatic state pages, first rankings.
+================================================================================
+
+WEEK 8–9: Next 20 Tools
+
+  [ ] T03 — W-4 Withholding Calculator
+  [ ] T06 — Bonus Tax Calculator
+  [ ] T07 — Side Hustle (W2 + 1099) Tax Calculator
+  [ ] T11 — Home Office Deduction Calculator
+  [ ] T12 — Vehicle / Mileage Deduction Calculator
+  [ ] T14 — Section 179 / Bonus Depreciation
+  [ ] T15 — S-Corp vs LLC Tax Savings Calculator
+  [ ] T16 — QBI Deduction Calculator
+  [ ] T19 — Child & Dependent Care Credit
+  [ ] T21 — Education Tax Credits Calculator
+  [ ] T22 — Student Loan Interest Deduction
+  [ ] T23 — Charitable Donation Deduction
+  [ ] T27 — Cryptocurrency Tax Calculator
+  [ ] T28 — Tax Loss Harvesting Calculator
+  [ ] T31 — Rental Property Tax Calculator
+  [ ] T32 — Traditional vs Roth IRA Comparison
+  [ ] T33 — Roth Conversion Calculator
+  [ ] T34 — Required Minimum Distribution (RMD)
+  [ ] T36 — HSA Contribution Tax Savings
+  [ ] T37 — Social Security Tax Calculator
+
+  Improvements based on Week 1–7 data:
+  [ ] Add "Compare Scenarios" to T01 (Tax Calculator)
+  [ ] Add state tax to T01 (combined federal + state result)
+  [ ] Tool rating system (thumbs up/down per tool)
+
+WEEK 10–11: Programmatic SEO — State Tax Pages
+
+  [ ] Build state tax data (all 50 states):
+        Income tax brackets, rates, standard deductions, special rules
+        File: /src/lib/taxData/state/[STATE].ts for each
+
+  [ ] Build programmatic state pages:
+        /state-tax/california/ → "California Income Tax 2025"
+        /state-tax/new-york/ → "New York Income Tax 2025"
+        ... all 50 states
+
+  [ ] State page template:
+        H1: "[State] Income Tax Calculator & Rates 2025"
+        Embedded state+federal combined calculator
+        Tax rates table with brackets
+        Key deductions/credits for that state
+        Comparison to neighboring states
+        FAQs (4–6 per state)
+        Links to relevant blog articles
+
+  [ ] generateStaticParams() for all 50 states → 50 static pages at build
+  [ ] State sitemap section (separate from main sitemap)
+
+  KEYWORD VALUE: "california income tax calculator" = 40,000/mo searches
+                 50 states × avg 2,000/mo = 100,000 potential monthly searches
+
+WEEK 12–13: 30 More Blog Articles
+
+  Publish 15 articles over 2 weeks (7–8/week):
+
+  Self-Employed Focus (high traffic, clear user intent):
+  [A11] "Self-Employment Tax Deductions: 23 Expenses You Can Write Off"
+  [A12] "How to Pay Quarterly Taxes Without Overpaying"
+  [A13] "S-Corp Election: When It Saves Money (With Calculator)"
+  [A14] "QBI Deduction Explained: Who Qualifies in 2025"
+  [A15] "Mileage vs Actual Expenses: Which Car Deduction Wins?"
+
+  Investment & Capital Gains:
+  [A16] "Tax Loss Harvesting: Step-by-Step Guide for 2025"
+  [A17] "Cryptocurrency Taxes 2025: What Every Crypto Owner Needs to Know"
+  [A18] "Rental Property Depreciation: How to Calculate & Claim It"
+  [A19] "How to Avoid Capital Gains Tax When Selling Your Home"
+  [A20] "NIIT: Do High Earners Owe the 3.8% Net Investment Income Tax?"
+
+  Retirement:
+  [A21] "Roth Conversion: The Best Time to Convert (With Calculator)"
+  [A22] "RMD Rules 2025: What You Must Withdraw & When"
+  [A23] "HSA Triple Tax Advantage: Why It Beats a 401k"
+  [A24] "How Much of My Social Security Is Taxable?"
+
+  Tax Planning:
+  [A25] "Year-End Tax Moves: 12 Things to Do Before December 31"
+  [A26] "Tax Filing Status Guide: Which One Saves You the Most?"
+  [A27] "State Income Tax Comparison: No-Tax States vs Highest-Tax States"
+  [A28] "When Should You Hire a CPA? (And How to Find One)"
+  [A29] "IRS Audit Red Flags: 10 Things That Trigger an Audit"
+  [A30] "Tax Extension Guide: How to File, Deadlines, What It Doesn't Do"
+
+  Internal linking pass:
+  [ ] Every article links to 2+ tools
+  [ ] Every tool page links to 2+ articles
+  [ ] State pages link to relevant articles
+
+WEEK 14: Conversion Optimization & Analytics Review
+
+  [ ] Review GA4: which tools used most, where users drop off
+  [ ] Heatmap setup: Microsoft Clarity (free) on homepage + top tool
+  [ ] A/B test newsletter placement in articles (mid vs bottom)
+  [ ] Improve tool pages with lowest session time
+  [ ] Add "Was this helpful?" widget to all articles + tools
+  [ ] Add feedback form: "What calculator do you need?"
+  [ ] First email to list: welcome + top 3 tax-saving tips
+  [ ] Check AdSense approval status (usually 2–4 weeks after content live)
+
+DELIVERABLE: 30 tools, 30 articles, 50 state pages, first keyword rankings
+
+================================================================================
+PHASE 3 — SEO ACCELERATION & MONETIZATION
+Timeline: Week 15–22 (8 weeks)
+Goal: Reach 25,000+ monthly sessions. Ad revenue flowing. Email list to 500+.
+================================================================================
+
+WEEK 15–16: Advanced SEO Features
+
+  [ ] Site search implementation (Pagefind):
+        Auto-index all pages at build time
+        Search modal (Cmd+K / search icon)
+        Results: tools first, then articles, then state pages
+
+  [ ] Internal link audit:
+        Map all pages → identify orphan pages (no inbound links)
+        Fix with contextual links in relevant articles
+
+  [ ] Featured Snippet optimization:
+        Review GSC for position 2–5 keywords
+        Rewrite those sections: definition boxes, numbered lists, tables
+        Target: 10 featured snippets in 6 months
+
+  [ ] Schema audit pass:
+        Validate all schemas in Google Rich Results Test
+        Add AggregateRating schema to top tools (collect via feedback widget)
+        Add SiteLinksSearchBox schema to homepage
+        Add BreadcrumbList to all non-homepage pages
+
+  [ ] Page speed audit + fix (target: all pages > 90 Lighthouse):
+        Bundle analyze: find large JS chunks
+        Move all calculator logic to dynamic() import
+        Preload hero image only
+        Check third-party scripts (GA, AdSense) impact
+
+  [ ] Implement ISR for blog posts (revalidate: 86400)
+  [ ] Implement ISR for tool pages (revalidate: 604800)
+
+WEEK 17–18: Link Building Foundation
+
+  Tactics (ethical, white-hat only):
+  [ ] HARO/Qwoted: respond to journalist requests for tax expert quotes
+        → journalists cite taxessaver.com
+  [ ] Resource page outreach: find finance blogs linking to NerdWallet tools
+        → email: "We have a better/free alternative tool at X"
+  [ ] Guest posts: write 2 articles for finance blogs (200k+ traffic)
+        with link back to relevant tool
+  [ ] Reddit strategy: weekly tool posts in r/personalfinance, r/tax
+        (genuine value first, link when relevant)
+  [ ] Build "Tax Bracket History" data page (1913–2025 rates)
+        → natural link magnet for journalists + wikipedia
+  [ ] Build "State Tax Comparison Table" (50-state data visualization)
+        → journalists link for reference data
+  [ ] Partner with 1 CPA/EA for expert quotes + social sharing
+
+WEEK 19–20: Monetization Setup
+
+  AdSense:
+  [ ] If approved: implement ad slots (non-intrusive):
+        Desktop: sticky sidebar 300x250 below TOC
+        Mobile: sticky banner bottom (320x50)
+        In-article: 728x90 after intro (desktop) / 320x100 (mobile)
+        Tools: banner BELOW result, never between input and result
+  [ ] Monitor: pages with >2s load after ads → reduce ad density
+
+  Affiliate System:
+  [ ] Build affiliate link management (simple JSON config):
+        /src/lib/affiliates.ts → {id, name, url, commission, logo, badge}
+  [ ] "Best Tax Software" comparison page:
+        TurboTax / H&R Block / TaxAct / FreeTaxUSA / Keeper / Column Tax
+        Table: price, features, who it's for, affiliate link
+        This page = highest affiliate revenue page
+  [ ] "Find a CPA" page:
+        Link to JustAnswer Tax (highest payout affiliate), TaxBuzz, CPAdirectory
+  [ ] Contextual affiliate CTAs in tool results:
+        SE Tax Calculator result → "Want to file these taxes easily? [Keeper Tax]"
+        Refund estimator result → "File free at [FreeTaxUSA]"
+  [ ] Add affiliate disclosures above every affiliate CTA (FTC compliance)
+
+  Email:
+  [ ] Launch "Tax Saver Weekly" newsletter (ConvertKit)
+  [ ] Email 1: welcome + 2025 deduction checklist PDF
+  [ ] Weekly cadence: Monday morning, one actionable tip + featured tool
+  [ ] Grow list: popup (exit intent, 30s delay) + inline forms
+
+WEEK 21–22: Mobile & Performance Polish
+
+  [ ] Mobile UX audit (real device testing):
+        Test all 30 tools on iPhone 14 + Samsung Galaxy
+        Verify number pads trigger on numeric inputs (inputmode="decimal")
+        Verify sliders work with touch (no accidental scrolling)
+        Verify charts readable on 375px width
+        Verify tap targets ≥ 44x44px
+
+  [ ] PWA setup:
+        manifest.json (name, icons, theme_color, display: standalone)
+        Service worker (cache shell, static assets, offline fallback page)
+        "Add to Home Screen" prompt (iOS-friendly banner)
+
+  [ ] Performance: enable Vercel Edge Config for tax data (sub-5ms reads)
+  [ ] CLS fix audit: verify no layout shift on tool inputs during typing
+  [ ] Lazy load below-fold images in articles (next/image → lazy default)
+  [ ] Optimize OG image generation (next/og) → auto-generated per page
+
+DELIVERABLE: 25k+ sessions/mo, AdSense live, affiliate pages, PWA ready
+
+================================================================================
+PHASE 4 — SCALE & ADVANCED FEATURES
+Timeline: Week 23–35 (13 weeks)
+Goal: 100k sessions/mo. Advanced tools. Email 2,000+. Mediavine eligible.
+================================================================================
+
+WEEK 23–25: Advanced Tools (T35–T50)
+
+  [ ] T38 — AMT Calculator (Alternative Minimum Tax)
+  [ ] T39 — NIIT Calculator
+  [ ] T40 — Marriage Penalty/Bonus Calculator
+  [ ] T41 — Filing Status Comparison (all 4 statuses simultaneously)
+  [ ] T42 — Underpayment Penalty Estimator
+  [ ] T43 — IRS Installment Interest Calculator
+  [ ] T44 — Gift Tax Exclusion Calculator
+  [ ] T45 — Estate Tax Calculator
+  [ ] T46 — Tax Deadline Calendar (interactive, shows YOUR deadlines)
+  [ ] T47 — IRS Payment Plan Eligibility Checker
+  [ ] T48 — Multi-Year Tax Comparison (2022/2023/2024/2025 side-by-side)
+  [ ] T49 — Document Checklist Generator (personalized by situation answers)
+  [ ] T29 — Stock Option Calculator (ISO/NSO/ESPP)
+  [ ] T30 — Full MACRS Depreciation Calculator (all asset classes)
+  [ ] T35 — Solo 401k Max Contribution Calculator
+
+WEEK 26–27: Programmatic SEO — City Pages + Tool Variants
+
+  [ ] Top 100 US cities × income tax = 100 city landing pages
+        /state-tax/california/los-angeles/
+        Template: local tax info + combined federal/state calculator
+        City-specific data: local tax (NYC, Philly, Denver, etc.)
+
+  [ ] Tool variant pages (SEO longtail):
+        /tools/income-tax-calculator/2025/
+        /tools/income-tax-calculator/married-filing-jointly/
+        /tools/capital-gains-calculator/real-estate/
+        These are separate static pages optimized for specific queries
+
+  [ ] Tax year archive pages:
+        /tax-brackets/2024/ /tax-brackets/2023/ /tax-brackets/2022/
+        Historical data = linkable reference resource
+
+WEEK 28–30: Content Authority Expansion
+
+  [ ] 40 more articles (target: 70 total)
+  [ ] Build "Tax Guides" hub pages (pillar content):
+        /guides/self-employment-taxes/ → links to all SE articles + tools
+        /guides/investment-taxes/ → capital gains, crypto, stocks
+        /guides/retirement-tax-planning/
+        /guides/small-business-taxes/
+        These pillar pages consolidate topical authority
+
+  [ ] Annual research report:
+        "2025 American Tax Burden Report" (data + charts)
+        Newsworthy → pitch to Forbes, MarketWatch, CNBC
+        Goal: 50+ high-DA backlinks from press coverage
+
+  [ ] Video embeds (future): embed YouTube explainer videos in key articles
+        (boosts time-on-page → engagement signal)
+
+WEEK 31–33: User Accounts (Optional Feature)
+
+  This is optional — evaluate based on demand signals from "Was this helpful?" data
+
+  [ ] Auth: NextAuth.js + email magic link (no password)
+  [ ] Saved calculations: localStorage upgraded to server-side per user
+  [ ] Calculation history: "Your last 10 calculations"
+  [ ] Saved articles: bookmark articles
+  [ ] No PII collected beyond email (privacy-first)
+  [ ] Free account only (premium in Phase 5)
+
+WEEK 34–35: Analytics Deep Dive + SEO Review
+
+  [ ] GSC: identify all pages ranking position 4–10 → optimize for top 3
+  [ ] Identify pages with high impressions / low CTR → improve title/description
+  [ ] Identify content gaps vs competitors (Ahrefs/SEMrush if budget available)
+  [ ] Full site crawl (Screaming Frog free: < 500 URLs, else use GSC)
+  [ ] Fix internal linking gaps found in crawl
+  [ ] Broken link check + 301 redirect any changed URLs
+  [ ] Apply for Mediavine (50k sessions/30 days required)
+  [ ] Email funnel analysis: open rate, click rate, unsubscribe rate
+
+DELIVERABLE: 100k sessions, 50 tools, 70 articles, Mediavine application sent
+
+================================================================================
+PHASE 5 — PREMIUM & REVENUE OPTIMIZATION
+Timeline: Week 36–48 (12 weeks)
+Goal: $5,000+/mo revenue. Premium product. 200k sessions.
+================================================================================
+
+WEEK 36–38: Premium Tier Launch
+
+  [ ] Premium plan: $4.99/mo or $29/yr
+  [ ] Premium features:
+        - No ads
+        - Save unlimited calculations to account
+        - PDF export of any tool result (with logo, date, filing status)
+        - Multi-year planning dashboard (2023–2026 side-by-side)
+        - "Tax Saving Opportunities" report (personalized to your inputs)
+        - Early access to new tools
+  [ ] Payment: Stripe + Stripe billing portal
+  [ ] Pricing page with comparison table (free vs premium)
+  [ ] 7-day free trial (no CC required)
+  [ ] In-tool upgrade prompt (shown when free user clicks premium feature)
+
+WEEK 39–41: Email & Community Growth
+
+  [ ] Email sequence for new subscribers (7-email drip):
+        Day 0: Welcome + checklist
+        Day 2: "The most missed deduction for your situation"
+        Day 5: Tool spotlight + how-to
+        Day 9: Tax myth busted
+        Day 14: Community + case study
+        Day 21: Premium offer
+        Day 30: Re-engage / survey
+  [ ] Segment email list by user type (quiz on signup):
+        W2 / Freelancer / Business / Investor → tailored content
+  [ ] Newsletter growth: promote on Reddit, mention in articles, exit intent
+
+WEEK 42–44: CPA Partnership Program
+
+  [ ] "Find a Tax Pro" directory:
+        CPAs/EAs pay $50–200/mo to be listed
+        Users see: specialty, location, ratings, contact
+        Revenue share with referral (lead gen model)
+  [ ] CPA Expert Q&A blog series: partner CPAs write articles, we publish
+        Benefit: free E-E-A-T content, CPA gets visibility
+  [ ] "Ask a CPA" widget: free question → answer via email → if complex → paid CPA
+
+WEEK 45–48: Revenue Optimization
+
+  [ ] Mediavine live (if accepted) — 3–5x RPM vs AdSense
+  [ ] Optimize affiliate CTAs (A/B test copy, placement, button color)
+  [ ] Add seasonal affiliate pushes (Jan–Apr = peak filing season)
+  [ ] Launch "TaxSaver Pro" annual push (Black Friday + Jan 1 + Apr 1)
+  [ ] Partner with 1099 payroll tool (Gusto, Rippling) → affiliate or integration
+  [ ] Explore: sponsored tool (e.g., "Capital Gains Calculator by [Broker]")
+
+DELIVERABLE: $5k/mo revenue target, premium product live, directory launched
+
+================================================================================
+PHASE 6 — AUTHORITY & MOAT BUILDING
+Timeline: Week 49–60 (12 weeks, Year 2)
+Goal: 500k sessions. Recognized brand. $10k+/mo. Defensible position.
+================================================================================
+
+WEEK 49–52: International Expansion (Canada + UK)
+  [ ] /ca/ route: Canadian income tax calculators (federal + provinces)
+  [ ] /uk/ route: UK income tax, National Insurance calculators
+  [ ] Hreflang implementation
+  [ ] Localized content for CA/UK
+  Note: prioritize only if analytics shows significant CA/UK traffic
+
+WEEK 53–56: API / Embed Offering
+  [ ] Public calculator embed:
+        Other sites can embed TaxSaver tools via iframe or JS snippet
+        Free embed → backlink required in footer
+        Paid white-label embed → $49/mo for brand removal
+  [ ] Tax Data API (v1):
+        GET /api/brackets?year=2025&state=CA
+        GET /api/calculate?type=federal&income=85000&filing=single
+        Paid API access for developers: $19/mo (1k calls) / $99/mo (unlimited)
+
+WEEK 57–60: Brand & PR
+  [ ] Apply for "Investopedia Advisor Network" or similar expert directories
+  [ ] Annual: "State of Tax Burden in America" report (press + backlinks)
+  [ ] Podcast outreach: appear on personal finance podcasts (Money Girl, etc.)
+  [ ] Build email list to 10,000+ (promote widely)
+  [ ] Wikipedia: contribute to tax articles with taxessaver.com as reference
+  [ ] Consider: hire 1 part-time content writer (ROI on content proven)
+
+================================================================================
+ONGOING — ANNUAL MAINTENANCE (Every Year)
+================================================================================
+
+  TAX DATA UPDATES (October–December each year):
+  [ ] IRS announces next year brackets (usually Oct/Nov)
+  [ ] Update all bracket data files for new year
+  [ ] Add new year option to all calculators
+  [ ] Update all articles: "2025 → 2026" where needed
+  [ ] Publish "New [Year] Tax Brackets" article immediately when IRS announces
+        (this article = huge traffic spike every year, ranks fast)
+  [ ] Update standard deduction, AMT exemptions, contribution limits
+
+  QUARTERLY:
+  [ ] Core Web Vitals check (Google Search Console → Experience tab)
+  [ ] Broken link check
+  [ ] Update articles with outdated IRS links
+  [ ] Email newsletter: quarterly tax deadline reminders (Jan 15, Apr 15, Jun 15, Sep 15)
+
+  MONTHLY:
+  [ ] GSC review: impressions, clicks, top queries, new keywords
+  [ ] GA4 review: top pages, bounce rate, session duration trends
+  [ ] Publish 4–8 articles minimum (consistency = crawl budget signal)
+  [ ] Build 2–5 backlinks minimum (outreach or PR)
+
+================================================================================
+CRITICAL LAUNCH CHECKLIST (Before Going Live)
+================================================================================
+
+  SEO:
+  ✓ All pages have unique title tags (50–60 chars)
+  ✓ All pages have unique meta descriptions (140–160 chars)
+  ✓ All pages have OG title + OG description + OG image
+  ✓ Canonical tags on all pages
+  ✓ XML sitemap generated and submitted to GSC
+  ✓ robots.txt correct
+  ✓ No noindex on content pages
+  ✓ JSON-LD schema on all tool + blog pages
+  ✓ Google Search Console verified + sitemap submitted
+  ✓ Bing Webmaster Tools verified + sitemap submitted
+  ✓ GA4 tracking events firing correctly
+
+  PERFORMANCE:
+  ✓ Lighthouse 90+ on mobile for all key pages
+  ✓ LCP < 2.5s on 4G mobile
+  ✓ CLS < 0.1 on all pages
+  ✓ INP < 200ms on all interactive pages
+  ✓ No render-blocking resources
+  ✓ All images WebP + proper dimensions set
+
+  QUALITY:
+  ✓ All calculator results verified against IRS examples
+  ✓ All links work (no 404s)
+  ✓ Mobile tested on real iOS + Android device
+  ✓ Dark mode tested
+  ✓ All forms tested end-to-end
+  ✓ Newsletter signup tested (email received)
+
+  LEGAL:
+  ✓ Disclaimer on every tool result page
+  ✓ Privacy policy live
+  ✓ Terms of service live
+  ✓ Affiliate disclosure live + linked from footer
+  ✓ Cookie consent functional
+
+================================================================================
+TIMELINE SUMMARY
+================================================================================
+
+Phase 0   Week 1–2    Foundation: repo, hosting, design system
+Phase 1   Week 3–7    MVP: 10 tools, 10 articles, SEO basics, launch
+Phase 2   Week 8–14   Expansion: 30 tools, 40 articles, 50 state pages
+Phase 3   Week 15–22  Monetization: AdSense, affiliate, email, performance
+Phase 4   Week 23–35  Scale: 50 tools, 70 articles, 100k sessions, Mediavine
+Phase 5   Week 36–48  Premium: paid tier, CPA directory, $5k/mo revenue
+Phase 6   Week 49–60  Authority: API, embeds, international, $10k+/mo
+
+================================================================================
+BUDGET ESTIMATE (Year 1 — Lean Start)
+================================================================================
+
+  Domain (taxessaver.com):          $10–15/yr
+  Cloudflare (free tier):           $0
+  Vercel (hobby → pro at scale):    $0–20/mo
+  Contentlayer/MDX (open source):   $0
+  ConvertKit (up to 1k subs free):  $0 → $29/mo
+  Sentry (free tier):               $0
+  Algolia (if needed, free tier):   $0
+  Clarity/Analytics (free):         $0
+  BrowserStack (mobile testing):    $25/mo or use physical devices
+  SEMrush/Ahrefs (SEO research):    $99/mo (optional, use free tools first)
+  Canva Pro (OG images, graphics):  $13/mo
+  ──────────────────────────────────────────
+  Total Year 1 (lean):              $600–$1,500
+
+  Revenue starts Month 3–4 (AdSense).
+  Revenue covers costs by Month 6–8.
+  Profit from Month 9+.
+
+================================================================================
+END OF DEVELOPMENT ROADMAP
+================================================================================

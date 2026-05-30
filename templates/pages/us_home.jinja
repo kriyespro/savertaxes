@@ -1,0 +1,183 @@
+{% extends "base.jinja" %}
+
+{% block content %}
+
+{# ── Hero ──────────────────────────────────────────────────────────── #}
+<section style="background: linear-gradient(135deg, #1e3a5f 0%, #1a56db 100%);" class="text-white py-16 px-4">
+  <div class="max-w-4xl mx-auto text-center">
+    <div class="inline-flex items-center gap-2 text-blue-200 text-sm font-medium px-4 py-1 rounded-full mb-6" style="background:rgba(255,255,255,0.12);">
+      🇺🇸 US Tax Tools &mdash; Tax Year 2025
+    </div>
+    <h1 class="text-3xl font-bold leading-tight mb-4" style="font-size:clamp(1.75rem,5vw,3rem);">
+      Free US Federal Tax Calculators<br> for Tax Year 2025
+    </h1>
+    <p class="text-blue-100 text-lg mb-8">Calculate federal income tax, self-employment tax, capital gains, and more. No signup required.</p>
+
+    {# Primary CTAs #}
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <a href="{{ url('tools:index') }}"
+         class="inline-flex items-center gap-2 bg-accent hover:bg-orange-600 text-white font-semibold px-8 py-4 rounded-xl text-lg transition-colors shadow-lg">
+        Browse US Tax Tools
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+      </a>
+      <a href="/in/"
+         class="inline-flex items-center gap-2 text-white font-medium px-6 py-4 rounded-xl text-base transition-colors" style="background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3);">
+        🇮🇳 India Tools
+      </a>
+    </div>
+
+    {# Trust bar #}
+    <div class="flex flex-wrap justify-center gap-6 mt-10 text-sm text-blue-200">
+      <span>✓ IRS-Aligned Calculations</span>
+      <span>✓ Tax Year 2025</span>
+      <span>✓ Federal + State</span>
+      <span>✓ No Login Required</span>
+    </div>
+  </div>
+</section>
+
+{# ── Situation Cards ─────────────────────────────────────────────── #}
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  <h2 class="text-2xl font-bold text-center mb-8 text-gray-900 dark:text-white">What describes you?</h2>
+  <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+    {% set situations = [
+      {'label': 'Salaried W-2', 'icon': '💼', 'href': url('tools:index')},
+      {'label': 'Self-Employed', 'icon': '💻', 'href': url('tools:index')},
+      {'label': 'Freelancer', 'icon': '🎨', 'href': url('tools:index')},
+      {'label': 'Investor', 'icon': '📈', 'href': url('tools:index')},
+      {'label': 'Retiree', 'icon': '🏖️', 'href': url('tools:index')},
+    ] %}
+    {% for s in situations %}
+    <a href="{{ s.href }}" class="flex flex-col items-center p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-primary hover:shadow-md transition-all text-center">
+      <span class="text-3xl mb-2">{{ s.icon }}</span>
+      <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ s.label }}</span>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+
+{# ── Featured US Tools ───────────────────────────────────────────── #}
+<section class="bg-gray-50 dark:bg-gray-900 py-12 px-4">
+  <div class="max-w-7xl mx-auto">
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Free US Tax Calculators 2025</h2>
+        <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">IRS-accurate · Tax Year 2025 · No signup required</p>
+      </div>
+      <a href="{{ url('tools:index') }}" class="text-primary dark:text-blue-400 text-sm font-medium hover:underline">All tools →</a>
+    </div>
+
+    {# Primary featured tools - large cards #}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      {% set tool_icons = {
+        'us-federal-income-tax-calculator': '🏛️',
+        'us-tax-refund-estimator': '💰',
+        'us-self-employment-tax-calculator': '💼',
+        'us-paycheck-calculator': '💵',
+        'us-capital-gains-tax-calculator': '📈',
+        'us-quarterly-estimated-tax': '📅',
+        'us-standard-vs-itemized-deduction': '⚖️',
+        'us-w4-withholding-guide': '📋',
+      } %}
+      {% for tool in featured_tools %}
+      <a href="{{ tool.get_absolute_url() }}"
+         class="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 hover:border-primary hover:shadow-lg transition-all group">
+        <div class="text-4xl mb-3">{{ tool_icons.get(tool.slug, '🧮') }}</div>
+        <h3 class="font-bold text-gray-900 dark:text-white group-hover:text-primary transition-colors leading-tight mb-2">{{ tool.name }}</h3>
+        <p class="text-gray-500 dark:text-gray-400 text-sm line-clamp-2">{{ tool.short_desc }}</p>
+        <div class="mt-4 flex items-center gap-1 text-primary dark:text-blue-400 text-sm font-medium">
+          Calculate now
+          <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          </svg>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+
+    {# Quick-access secondary tools row #}
+    <div class="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3">
+      {% set quick = [
+        ('us-w4-withholding-guide', '📋', 'W-4 Guide'),
+        ('us-standard-vs-itemized-deduction', '⚖️', 'Std vs Itemized'),
+        ('us-quarterly-estimated-tax', '📅', 'Quarterly Tax'),
+        ('us-capital-gains-tax-calculator', '📈', 'Capital Gains'),
+      ] %}
+      {% for slug, icon, label in quick %}
+      <a href="{{ url('tools:detail', args=[slug]) }}"
+         class="flex items-center gap-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-primary rounded-xl px-3 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary transition-all">
+        <span class="text-lg">{{ icon }}</span>{{ label }}
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ── Tax Deadlines banner ─────────────────────────────────────────── #}
+<div class="bg-amber-50 dark:bg-amber-900/20 border-y border-amber-200 dark:border-amber-800 py-3 px-4">
+  <p class="text-center text-sm text-amber-800 dark:text-amber-200">
+    📅 <strong>2025 Tax Deadlines:</strong>
+    Q2 Est. Tax: <strong>Jun 16</strong> &nbsp;·&nbsp;
+    Q3 Est. Tax: <strong>Sep 15</strong> &nbsp;·&nbsp;
+    Q4 Est. Tax: <strong>Jan 15, 2026</strong> &nbsp;·&nbsp;
+    Tax Return: <strong>Apr 15, 2026</strong>
+    <a href="{{ url('tools:detail', args=['us-quarterly-estimated-tax']) }}" class="underline ml-2">Calculate →</a>
+  </p>
+</div>
+
+{# ── Who is this for ─────────────────────────────────────────────── #}
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  <h2 class="text-2xl font-bold text-center text-gray-900 dark:text-white mb-8">Tools for Every Tax Situation</h2>
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    {% set scenarios = [
+      ('💼', 'W-2 Employee', 'Calculate take-home pay, check your withholding, and estimate your refund.', 'us-paycheck-calculator'),
+      ('💻', 'Freelancer / 1099', 'Self-employment tax (15.3%), quarterly payments, and deductible SE tax.', 'us-self-employment-tax-calculator'),
+      ('📈', 'Investor', 'Short-term vs long-term capital gains rates, NIIT (3.8%), and when you owe.', 'us-capital-gains-tax-calculator'),
+      ('🏠', 'Homeowner', 'Should you itemize? Mortgage interest, SALT cap, and charitable deductions.', 'us-standard-vs-itemized-deduction'),
+    ] %}
+    {% for icon, title, desc, slug in scenarios %}
+    <a href="{{ url('tools:detail', args=[slug]) }}"
+       class="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-200 dark:border-gray-700 hover:border-primary hover:shadow-md transition-all">
+      <span class="text-3xl">{{ icon }}</span>
+      <h3 class="font-bold text-gray-900 dark:text-white mt-2 mb-1">{{ title }}</h3>
+      <p class="text-gray-500 dark:text-gray-400 text-xs leading-relaxed">{{ desc }}</p>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+
+{# ── Newsletter ───────────────────────────────────────────────────── #}
+<section class="bg-primary py-10 px-4">
+  <div class="max-w-2xl mx-auto text-center">
+    <h2 class="text-xl font-bold text-white mb-2">Get Tax Tips & Deadline Reminders</h2>
+    <p class="text-blue-200 text-sm mb-5">Free weekly newsletter. Quarterly payment reminders. No spam.</p>
+    <form hx-post="{{ url('newsletter:subscribe') }}"
+          hx-target="#us-nl-result"
+          hx-swap="innerHTML"
+          class="flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto">
+      {{ csrf_input }}
+      <input type="email" name="email" required placeholder="your@email.com"
+             class="flex-1 px-4 py-3 rounded-xl border-0 focus:outline-none focus:ring-2 focus:ring-white text-sm text-gray-900">
+      <button type="submit"
+              class="bg-accent hover:bg-orange-600 text-white font-semibold px-6 py-3 rounded-xl transition-colors text-sm">
+        Subscribe Free
+      </button>
+    </form>
+    <div id="us-nl-result" class="mt-3 text-white text-sm"></div>
+  </div>
+</section>
+
+{# ── India CTA ─────────────────────────────────────────────────── #}
+<section class="py-10 px-4 bg-white dark:bg-gray-950 border-t border-gray-200 dark:border-gray-800">
+  <div class="max-w-3xl mx-auto text-center">
+    <p class="text-gray-500 dark:text-gray-400 text-sm mb-3">Looking for India tax calculators?</p>
+    <a href="{{ url('pages:set_market') }}?market=india&next=/"
+       class="inline-flex items-center gap-2 text-primary dark:text-blue-400 font-medium hover:underline text-sm">
+      🇮🇳 Switch to TaxSaver India — 50+ free Indian tax tools →
+    </a>
+  </div>
+</section>
+
+{% endblock %}

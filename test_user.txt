@@ -1,0 +1,10 @@
+Admin (superuser):
+  username: admin
+  password: admin123
+  url: http://127.0.0.1:8000/sd/
+
+Mission Control:
+  url: http://127.0.0.1:8000/admin/
+
+Site:
+  url: http://127.0.0.1:8000/

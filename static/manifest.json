@@ -1,0 +1,40 @@
+{
+  "name": "TaxSaver India — Free Tax Calculators",
+  "short_name": "TaxSaver",
+  "description": "Free income tax calculators for India FY 2025-26. Old vs New regime, HRA, GST, and 50+ tools.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F8F9FA",
+  "theme_color": "#1A3A5C",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/static/img/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/static/img/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Old vs New Regime",
+      "short_name": "Regime Calc",
+      "url": "/tools/old-vs-new-tax-regime/",
+      "icons": [{ "src": "/static/img/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Income Tax Calculator",
+      "short_name": "Tax Calc",
+      "url": "/tools/income-tax-calculator/",
+      "icons": [{ "src": "/static/img/icon-192.png", "sizes": "192x192" }]
+    }
+  ],
+  "categories": ["finance", "utilities"],
+  "lang": "en-IN"
+}

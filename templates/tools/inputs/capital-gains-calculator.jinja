@@ -1,0 +1,23 @@
+{# T10 — Capital Gains Calculator (Equity/MF) #}
+<div class="space-y-5">
+  {% for name, label, placeholder in [
+    ('buy_price', 'Buy Price per Unit / Share (₹)', '100'),
+    ('sell_price', 'Sell Price per Unit / Share (₹)', '150'),
+    ('units', 'Number of Units / Shares', '1000'),
+  ] %}
+  <div>
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ label }}</label>
+    <div class="relative">
+      <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium">₹</span>
+      <input type="number" name="{{ name }}" placeholder="{{ placeholder }}" min="0" inputmode="decimal"
+             class="w-full pl-8 pr-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary text-sm">
+    </div>
+  </div>
+  {% endfor %}
+  <div>
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Holding Period (months)</label>
+    <input type="number" name="holding_months" placeholder="e.g. 14" min="1" inputmode="numeric"
+           class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary text-sm">
+    <p class="text-xs text-gray-400 mt-1">STCG if &lt; 12 months (20% tax) | LTCG if ≥ 12 months (12.5% above ₹1.25L exemption)</p>
+  </div>
+</div>

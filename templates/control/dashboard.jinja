@@ -1,0 +1,26 @@
+{% extends "control/base_control.jinja" %}
+{% block content %}
+<h1 class="text-2xl font-bold text-gray-900 mb-6">Dashboard</h1>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+  {% for label, val, color in [
+    ('Total Users', total_users, 'blue'),
+    ('Total Tools', total_tools, 'green'),
+    ('CA Leads Today', new_leads_today, 'orange'),
+    ('Total CA Leads', total_leads, 'purple'),
+  ] %}
+  <div class="bg-white rounded-xl border border-gray-200 p-6">
+    <p class="text-sm text-gray-500 mb-1">{{ label }}</p>
+    <p class="text-3xl font-bold text-gray-900">{{ val }}</p>
+  </div>
+  {% endfor %}
+</div>
+<div class="bg-white rounded-xl border border-gray-200 p-6">
+  <h2 class="font-semibold text-gray-900 mb-4">Quick Links</h2>
+  <div class="space-y-2">
+    <a href="{{ url('admin:index') }}" class="block text-sm text-blue-600 hover:underline">→ Manage Tools (add/edit)</a>
+    <a href="{{ url('admin:index') }}" class="block text-sm text-blue-600 hover:underline">→ Manage Blog Articles</a>
+    <a href="{{ url('control:leads') }}" class="block text-sm text-blue-600 hover:underline">→ View CA Leads</a>
+    <a href="{{ url('pages:home') }}" class="block text-sm text-blue-600 hover:underline">→ View Site</a>
+  </div>
+</div>
+{% endblock %}

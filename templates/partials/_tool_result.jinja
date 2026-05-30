@@ -1,0 +1,1065 @@
+{% if error %}
+<div class="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-sm text-red-600 dark:text-red-400">
+  {{ error }}
+</div>
+
+{% elif result %}
+
+{# ══════════════════════════════════════════════════════════════════════
+   US TOOL RESULTS
+   ══════════════════════════════════════════════════════════════════════ #}
+
+{# ── US Federal Income Tax ─────────────────────────────────────────── #}
+{% if result.type == 'us_federal_tax' %}
+<div class="space-y-4">
+  <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4 text-center">
+    <p class="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold tracking-wide">Federal Tax Owed — {{ result.filing_status_label }}</p>
+    <p class="text-4xl font-bold text-gray-900 dark:text-white mt-1">${{ '{:,.0f}'.format(result.federal_tax) }}</p>
+    <p class="text-sm text-gray-500 mt-1">Effective rate: <strong>{{ result.effective_rate }}%</strong> &nbsp;·&nbsp; Marginal rate: <strong>{{ result.marginal_rate_pct }}</strong></p>
+  </div>
+
+  <div class="grid grid-cols-2 gap-3">
+    <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-3 text-center">
+      <p class="text-xs text-gray-500">Taxable Income</p>
+      <p class="font-bold text-gray-900 dark:text-white">${{ '{:,.0f}'.format(result.taxable_income) }}</p>
+    </div>
+    <div class="bg-green-50 dark:bg-green-900/20 rounded-xl p-3 text-center">
+      <p class="text-xs text-gray-500">Take-Home (after fed tax)</p>
+      <p class="font-bold text-green-600 dark:text-green-400">${{ '{:,.0f}'.format(result.take_home) }}</p>
+    </div>
+    <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-3 text-center">
+      <p class="text-xs text-gray-500">{{ result.deduction_type }} Deduction</p>
+      <p class="font-bold text-gray-900 dark:text-white">${{ '{:,.0f}'.format(result.deduction) }}</p>
+    </div>
+    {% if result.total_credits > 0 %}
+    <div class="bg-green-50 dark:bg-green-900/20 rounded-xl p-3 text-center">
+      <p class="text-xs text-gray-500">Credits Applied</p>
+      <p class="font-bold text-green-600 dark:text-green-400">-${{ '{:,.0f}'.format(result.total_credits) }}</p>
+    </div>
+    {% endif %}
+  </div>
+
+  {# Bracket breakdown #}
+  {% if result.breakdown %}
+  <div>
+    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Tax Bracket Breakdown</p>
+    <div class="space-y-1">
+      {% for b in result.breakdown %}
+      <div class="flex items-center justify-between text-sm bg-gray-50 dark:bg-gray-700 rounded-lg px-3 py-2">
+        <span class="text-gray-600 dark:text-gray-400">{{ b.rate_pct }} bracket &nbsp;·&nbsp; ${{ '{:,.0f}'.format(b.income_in_bracket) }}</span>
+        <span class="font-semibold text-gray-900 dark:text-white">${{ '{:,.0f}'.format(b.tax) }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+{# ── US Tax Refund Estimator ───────────────────────────────────────── #}
+{% elif result.type == 'us_refund' %}
+<div class="space-y-4">
+  {% if result.is_refund %}
+  <div class="bg-green-50 dark:bg-green-900/20 border-2 border-green-400 dark:border-green-600 rounded-xl p-5 text-center">
+    <p class="text-green-700 dark:text-green-400 font-bold text-lg">🎉 Estimated Refund</p>
+    <p class="text-4xl font-bold text-green-600 dark:text-green-400 mt-1">${{ '{:,.0f}'.format(result.refund) }}</p>
+    <p class="text-xs text-gray-500 mt-2">The IRS will refund this amount (typically in 21 days for e-file)</p>
+  </div>
+  {% else %}
+  <div class="bg-red-50 dark:bg-red-900/20 border-2 border-red-400 dark:border-red-600 rounded-xl p-5 text-center">
+    <p class="text-red-700 dark:text-red-400 font-bold text-lg">⚠️ Amount Owed to IRS</p>
+    <p class="text-4xl font-bold text-red-600 dark:text-red-400 mt-1">${{ '{:,.0f}'.format(result.owe) }}</p>
+    <p class="text-xs text-gray-500 mt-2">Due by April 15, 2026. Consider adjusting your W-4 withholding.</p>
+  </div>
+  {% endif %}
+
+  <div class="grid grid-cols-2 gap-3">
+    <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-3 text-center">
+      <p class="text-xs text-gray-500">Tax Owed</p>
+      <p class="font-bold text-gray-900 dark:text-white">${{ '{:,.0f}'.format(result.tax_owed) }}</p>
+    </div>
+    <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-3 text-center">
+      <p class="text-xs text-gray-500">Tax Withheld</p>
+      <p class="font-bold text-gray-900 dark:text-white">${{ '{:,.0f}'.format(result.withholding) }}</p>
+    </div>
+  </div>
+  <p class="text-xs text-center text-gray-400">Effective tax rate: {{ result.effective_rate }}% · {{ result.filing_status_label }}</p>
+</div>
+
+{# ── US Self-Employment Tax ────────────────────────────────────────── #}
+{% elif result.type == 'us_se_tax' %}
+<div class="space-y-4">
+  <div class="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-xl p-4 text-center">
+    <p class="text-xs text-gray-500 font-semibold uppercase tracking-wide">Total Tax (SE + Federal)</p>
+    <p class="text-4xl font-bold text-gray-900 dark:text-white mt-1">${{ '{:,.0f}'.format(result.total_tax) }}</p>
+    <p class="text-sm text-gray-500 mt-1">{{ result.effective_total_rate }}% of net profit</p>
+  </div>
+
+  <div class="grid grid-cols-2 gap-3">
+    <div class="bg-red-50 dark:bg-red-900/20 rounded-xl p-3 text-center">
+      <p class="text-xs text-gray-500">SE Tax (15.3%)</p>
+      <p class="font-bold text-red-600 dark:text-red-400">${{ '{:,.0f}'.format(result.se_tax) }}</p>
+      <p class="text-xs text-gray-400">SS: ${{ '{:,.0f}'.format(result.ss_tax) }} + Med: ${{ '{:,.0f}'.format(result.medicare_tax) }}</p>
+    </div>
+    <div class="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-3 text-center">
+      <p class="text-xs text-gray-500">Federal Income Tax</p>
+      <p class="font-bold text-blue-600 dark:text-blue-400">${{ '{:,.0f}'.format(result.federal_tax) }}</p>
+      <p class="text-xs text-gray-400">After SE deduction of ${{ '{:,.0f}'.format(result.se_deduction) }}</p>
+    </div>
+    <div class="bg-green-50 dark:bg-green-900/20 rounded-xl p-3 text-center">
+      <p class="text-xs text-gray-500">Take-Home</p>
+      <p class="font-bold text-green-600 dark:text-green-400">${{ '{:,.0f}'.format(result.take_home) }}</p>
+    </div>
+    <div class="bg-amber-50 dark:bg-amber-900/20 rounded-xl p-3 text-center">
+      <p class="text-xs text-gray-500">Quarterly Payment</p>
+      <p class="font-bold text-amber-600 dark:text-amber-400">${{ '{:,.0f}'.format(result.quarterly_payment) }}</p>
+      <p class="text-xs text-gray-400">Due Apr / Jun / Sep / Jan</p>
+    </div>
+  </div>
+
+  <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-3 text-xs text-blue-700 dark:text-blue-300">
+    <strong>Tip:</strong> Deduct ${{ '{:,.0f}'.format(result.se_deduction) }} (half of SE tax) from income on Schedule 1, Line 15. Already reflected above.
+  </div>
+</div>
+
+{# ── US Paycheck ───────────────────────────────────────────────────── #}
+{% elif result.type == 'us_paycheck' %}
+<div class="space-y-4">
+  <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-4 text-center">
+    <p class="text-xs text-gray-500 font-semibold uppercase tracking-wide">Net Take-Home — {{ result.pay_frequency | title }}</p>
+    <p class="text-4xl font-bold text-green-600 dark:text-green-400 mt-1">${{ '{:,.2f}'.format(result.net_take_home_per_period) }}</p>
+    <p class="text-sm text-gray-500 mt-1">Per paycheck · ${{ '{:,.0f}'.format(result.net_take_home_annual) }}/year</p>
+  </div>
+
+  <div class="space-y-2">
+    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Per Paycheck Breakdown</p>
+    {% set rows = [
+      ('Gross Pay', result.gross_per_period, 'text-gray-900 dark:text-white', '+'),
+      ('Federal Income Tax', result.federal_tax_per_period, 'text-red-600 dark:text-red-400', '-'),
+      ('Social Security (6.2%)', result.ss_per_period, 'text-red-600 dark:text-red-400', '-'),
+      ('Medicare (1.45%)', result.medicare_per_period, 'text-red-600 dark:text-red-400', '-'),
+    ] %}
+    {% for label, val, cls, sign in rows %}
+    <div class="flex justify-between items-center bg-gray-50 dark:bg-gray-700 rounded-lg px-3 py-2 text-sm">
+      <span class="text-gray-600 dark:text-gray-400">{{ label }}</span>
+      <span class="{{ cls }} font-semibold">{{ sign }}${{ '{:,.2f}'.format(val) }}</span>
+    </div>
+    {% endfor %}
+    {% if result.state_tax_per_period > 0 %}
+    <div class="flex justify-between items-center bg-gray-50 dark:bg-gray-700 rounded-lg px-3 py-2 text-sm">
+      <span class="text-gray-600 dark:text-gray-400">State Income Tax</span>
+      <span class="text-red-600 dark:text-red-400 font-semibold">-${{ '{:,.2f}'.format(result.state_tax_per_period) }}</span>
+    </div>
+    {% endif %}
+    {% if result.pre_tax_per_period > 0 %}
+    <div class="flex justify-between items-center bg-gray-50 dark:bg-gray-700 rounded-lg px-3 py-2 text-sm">
+      <span class="text-gray-600 dark:text-gray-400">Pre-tax Deductions (401k/HSA)</span>
+      <span class="text-gray-600 dark:text-gray-400 font-semibold">-${{ '{:,.2f}'.format(result.pre_tax_per_period) }}</span>
+    </div>
+    {% endif %}
+    <div class="flex justify-between items-center bg-green-50 dark:bg-green-900/20 rounded-lg px-3 py-2.5 text-sm border border-green-200 dark:border-green-800">
+      <span class="font-semibold text-gray-900 dark:text-white">Net Take-Home</span>
+      <span class="font-bold text-green-600 dark:text-green-400">${{ '{:,.2f}'.format(result.net_take_home_per_period) }}</span>
+    </div>
+  </div>
+  <p class="text-xs text-center text-gray-400">Effective tax rate (fed + FICA): {{ result.effective_rate }}% · {{ result.filing_status_label }}</p>
+</div>
+
+{# ── US Capital Gains ──────────────────────────────────────────────── #}
+{% elif result.type == 'us_capital_gains' %}
+<div class="space-y-4">
+  <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4 text-center">
+    <p class="text-xs text-gray-500 font-semibold uppercase tracking-wide">Total Capital Gains Tax</p>
+    <p class="text-4xl font-bold text-gray-900 dark:text-white mt-1">${{ '{:,.0f}'.format(result.total_tax) }}</p>
+    <p class="text-sm text-gray-500 mt-1">Effective rate on gains: {{ result.effective_rate }}%</p>
+  </div>
+
+  <div class="grid grid-cols-2 gap-3">
+    {% if result.short_term_gain > 0 %}
+    <div class="bg-red-50 dark:bg-red-900/20 rounded-xl p-3 text-center">
+      <p class="text-xs text-gray-500">Short-Term Tax</p>
+      <p class="font-bold text-red-600 dark:text-red-400">${{ '{:,.0f}'.format(result.st_tax) }}</p>
+      <p class="text-xs text-gray-400">Ordinary income rates</p>
+    </div>
+    {% endif %}
+    {% if result.long_term_gain > 0 %}
+    <div class="bg-green-50 dark:bg-green-900/20 rounded-xl p-3 text-center">
+      <p class="text-xs text-gray-500">Long-Term Tax</p>
+      <p class="font-bold text-green-600 dark:text-green-400">${{ '{:,.0f}'.format(result.lt_tax) }}</p>
+      <p class="text-xs text-gray-400">Rate: {{ result.lt_rate_pct }}</p>
+    </div>
+    {% endif %}
+    {% if result.niit > 0 %}
+    <div class="bg-amber-50 dark:bg-amber-900/20 rounded-xl p-3 text-center col-span-2">
+      <p class="text-xs text-gray-500">Net Investment Income Tax (3.8% NIIT)</p>
+      <p class="font-bold text-amber-600 dark:text-amber-400">${{ '{:,.0f}'.format(result.niit) }}</p>
+    </div>
+    {% endif %}
+  </div>
+  <p class="text-xs text-center text-gray-400">{{ result.filing_status_label }}</p>
+</div>
+
+{# ── US Quarterly Estimated Tax ────────────────────────────────────── #}
+{% elif result.type == 'us_quarterly' %}
+<div class="space-y-4">
+  <div class="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4 text-center">
+    <p class="text-xs text-gray-500 font-semibold uppercase tracking-wide">Estimated Annual Tax</p>
+    <p class="text-3xl font-bold text-gray-900 dark:text-white mt-1">${{ '{:,.0f}'.format(result.annual_tax) }}</p>
+    <p class="text-sm text-gray-500 mt-1">Pay ${{ '{:,.0f}'.format(result.quarterly) }} per quarter</p>
+  </div>
+
+  <div class="space-y-2">
+    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">2025 Payment Schedule</p>
+    {% set quarters = [
+      ('Q1', result.q1_due, result.q1, 'Jan 1 – Mar 31 income'),
+      ('Q2', result.q2_due, result.q2, 'Apr 1 – May 31 income'),
+      ('Q3', result.q3_due, result.q3, 'Jun 1 – Aug 31 income'),
+      ('Q4', result.q4_due, result.q4, 'Sep 1 – Dec 31 income'),
+    ] %}
+    {% for q, due, amount, period in quarters %}
+    <div class="flex items-center justify-between bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3">
+      <div>
+        <span class="font-bold text-primary dark:text-blue-400 text-sm">{{ q }}</span>
+        <span class="text-xs text-gray-500 ml-2">Due: {{ due }}</span>
+        <p class="text-xs text-gray-400 mt-0.5">{{ period }}</p>
+      </div>
+      <span class="font-bold text-gray-900 dark:text-white">${{ '{:,.0f}'.format(amount) }}</span>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% if result.safe_harbor %}
+  <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-3 text-xs text-blue-700 dark:text-blue-300">
+    <strong>Safe Harbor:</strong> Pay ${{ '{:,.0f}'.format(result.safe_harbor_quarterly) }}/quarter (${{ '{:,.0f}'.format(result.safe_harbor) }}/year) to avoid underpayment penalty — based on prior year tax.
+  </div>
+  {% endif %}
+</div>
+
+{# ── US Standard vs Itemized ───────────────────────────────────────── #}
+{% elif result.type == 'us_std_vs_itemized' %}
+<div class="space-y-4">
+  <div class="{% if result.winner == 'standard' %}bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800{% else %}bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800{% endif %} border rounded-xl p-4 text-center">
+    <p class="font-bold text-lg text-gray-900 dark:text-white">
+      ✅ Take the {{ result.winner | title }} Deduction
+    </p>
+    <p class="text-2xl font-bold {% if result.winner == 'standard' %}text-blue-600 dark:text-blue-400{% else %}text-green-600 dark:text-green-400{% endif %} mt-1">
+      ${{ '{:,.0f}'.format(result.standard if result.winner == 'standard' else result.itemized) }}
+    </p>
+    <p class="text-sm text-gray-500 mt-1">Saves you ${{ '{:,.0f}'.format(result.tax_difference) }} more in taxes</p>
+  </div>
+
+  <div class="grid grid-cols-2 gap-3">
+    <div class="{% if result.winner == 'standard' %}ring-2 ring-blue-400{% endif %} bg-gray-50 dark:bg-gray-700 rounded-xl p-4 text-center">
+      <p class="text-xs text-gray-500 uppercase font-semibold">Standard</p>
+      <p class="text-2xl font-bold text-gray-900 dark:text-white mt-1">${{ '{:,.0f}'.format(result.standard) }}</p>
+      <p class="text-xs text-gray-400 mt-1">{{ result.filing_status_label }}</p>
+    </div>
+    <div class="{% if result.winner == 'itemized' %}ring-2 ring-green-400{% endif %} bg-gray-50 dark:bg-gray-700 rounded-xl p-4 text-center">
+      <p class="text-xs text-gray-500 uppercase font-semibold">Itemized</p>
+      <p class="text-2xl font-bold text-gray-900 dark:text-white mt-1">${{ '{:,.0f}'.format(result.itemized) }}</p>
+      {% if result.salt_capped %}
+      <p class="text-xs text-amber-600 dark:text-amber-400 mt-1">SALT capped at $10K</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{# ── Regime Comparison result ──────────────────────────────────────── #}
+{% if result.winner is defined and result.winner_label is defined %}
+<div class="space-y-4">
+
+  {# Winner Banner #}
+  <div class="{% if result.winner == 'new' %}bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800{% else %}bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800{% endif %} border rounded-xl p-4">
+    <p class="font-bold text-lg text-gray-900 dark:text-white">
+      ✅ {{ result.winner_label }} saves you more
+    </p>
+    <p class="text-2xl font-bold text-green-600 dark:text-green-400 mt-1">
+      {{ result.savings | inr }} saved per year
+    </p>
+    <p class="text-sm text-gray-500 dark:text-gray-400">= {{ result.savings_monthly | inr }} per month</p>
+  </div>
+
+  {# Side-by-side comparison #}
+  <div class="grid grid-cols-2 gap-3">
+    {% for regime_key, label in [('new', 'New Regime'), ('old', 'Old Regime')] %}
+    {% set r = result[regime_key] %}
+    <div class="{% if result.winner == regime_key %}ring-2 ring-green-400{% endif %} bg-gray-50 dark:bg-gray-700 rounded-xl p-4">
+      <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-2">{{ label }}</p>
+      <p class="text-xl font-bold text-gray-900 dark:text-white">{{ r.total_tax | inr }}</p>
+      <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Total Tax (incl. cess)</p>
+      <div class="mt-3 space-y-1 text-xs text-gray-600 dark:text-gray-400">
+        <div class="flex justify-between">
+          <span>Effective Rate</span>
+          <span class="font-medium">{{ r.effective_rate }}%</span>
+        </div>
+        <div class="flex justify-between">
+          <span>Take-Home/mo</span>
+          <span class="font-medium">{{ r.take_home_monthly | inr }}</span>
+        </div>
+      </div>
+      {% if result.winner == regime_key %}
+      <p class="mt-2 text-xs font-semibold text-green-600 dark:text-green-400">✓ Recommended</p>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+
+  {# WhatsApp Share #}
+  <a href="https://wa.me/?text={{ ('TaxSaver India: ' + result.winner_label + ' saves me ' + (result.savings | inr) + ' per year! Check here: ') | urlencode }}{{ request.build_absolute_uri() | urlencode }}"
+     target="_blank" rel="noopener"
+     class="flex items-center justify-center gap-2 bg-[#25D366] hover:bg-green-500 text-white font-medium py-2.5 rounded-xl text-sm transition-colors">
+    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.558 4.117 1.532 5.843L0 24l6.351-1.507A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.795 9.795 0 01-5.03-1.384l-.36-.214-3.732.884.936-3.617-.234-.373A9.777 9.777 0 012.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/></svg>
+    Share on WhatsApp
+  </a>
+</div>
+
+{# ── Generic single-regime result ──────────────────────────────────── #}
+{% elif result.total_tax is defined and result.take_home_yearly is defined %}
+<div class="space-y-4">
+  <div class="bg-primary/5 dark:bg-primary/10 border border-primary/20 rounded-xl p-5">
+    <p class="text-sm text-gray-500 dark:text-gray-400">Total Tax Payable (incl. cess)</p>
+    <p class="text-3xl font-bold text-primary dark:text-blue-400 mt-1">{{ result.total_tax | inr }}</p>
+  </div>
+
+  <div class="grid grid-cols-2 gap-3">
+    {% for label, val in [('Take-Home/Year', result.take_home_yearly), ('Take-Home/Month', result.take_home_monthly), ('Effective Rate', result.effective_rate|string + '%'), ('Marginal Rate', result.marginal_rate|string + '%')] %}
+    <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-3">
+      <p class="text-xs text-gray-500 dark:text-gray-400">{{ label }}</p>
+      <p class="font-bold text-gray-900 dark:text-white mt-1 text-sm">{% if '%' in val|string %}{{ val }}{% else %}{{ val | inr }}{% endif %}</p>
+    </div>
+    {% endfor %}
+  </div>
+
+  {# Slab breakdown #}
+  {% if result.breakdown %}
+  <details class="bg-gray-50 dark:bg-gray-700 rounded-xl">
+    <summary class="px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer">View slab breakdown</summary>
+    <div class="px-4 pb-4">
+      <table class="w-full text-xs mt-2">
+        <thead>
+          <tr class="text-gray-400 border-b border-gray-200 dark:border-gray-600">
+            <th class="text-left pb-2">Slab</th>
+            <th class="text-right pb-2">Rate</th>
+            <th class="text-right pb-2">Tax</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+          {% for slab in result.breakdown %}
+          <tr class="text-gray-600 dark:text-gray-400">
+            <td class="py-1.5">{{ slab.from | inr }} – {{ slab.to | inr }}</td>
+            <td class="text-right">{{ slab.rate }}%</td>
+            <td class="text-right font-medium">{{ slab.tax | inr }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </details>
+  {% endif %}
+</div>
+
+{# ── GST result ─────────────────────────────────────────────────────── #}
+{% elif result.gst_amount is defined %}
+<div class="space-y-3">
+  <div class="grid grid-cols-3 gap-3 text-center">
+    <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-4">
+      <p class="text-xs text-gray-500 dark:text-gray-400">{{ 'Amount (excl. GST)' if not result.reverse else 'Original Amount' }}</p>
+      <p class="text-xl font-bold text-gray-900 dark:text-white mt-1">{{ result.original_amount | inr }}</p>
+    </div>
+    <div class="bg-orange-50 dark:bg-orange-900/20 rounded-xl p-4">
+      <p class="text-xs text-gray-500 dark:text-gray-400">GST @ {{ result.rate_pct }}%</p>
+      <p class="text-xl font-bold text-orange-600 dark:text-orange-400 mt-1">{{ result.gst_amount | inr }}</p>
+    </div>
+    <div class="bg-primary/5 dark:bg-primary/10 rounded-xl p-4">
+      <p class="text-xs text-gray-500 dark:text-gray-400">Total Amount</p>
+      <p class="text-xl font-bold text-primary dark:text-blue-400 mt-1">{{ result.total_amount | inr }}</p>
+    </div>
+  </div>
+  <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-3 text-xs text-gray-600 dark:text-gray-400">
+    <div class="flex justify-between"><span>CGST ({{ result.rate_pct / 2 }}%)</span><span class="font-medium">{{ result.cgst | inr }}</span></div>
+    <div class="flex justify-between mt-1"><span>SGST ({{ result.rate_pct / 2 }}%)</span><span class="font-medium">{{ result.sgst | inr }}</span></div>
+  </div>
+</div>
+
+{# ── HRA result ─────────────────────────────────────────────────────── #}
+{% elif result.exemption is defined and result.hra_received is defined %}
+<div class="space-y-3">
+  <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-5">
+    <p class="text-sm text-gray-600 dark:text-gray-400">HRA Exemption Allowed</p>
+    <p class="text-3xl font-bold text-green-600 dark:text-green-400 mt-1">{{ result.exemption | inr }}</p>
+    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Taxable HRA: {{ result.taxable_hra | inr }}</p>
+  </div>
+  <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 space-y-2 text-xs text-gray-600 dark:text-gray-400">
+    <p class="font-medium text-gray-700 dark:text-gray-300 text-sm">Minimum of three amounts:</p>
+    <div class="flex justify-between"><span>1. Actual HRA received</span><span class="font-medium">{{ result.option1_hra_received | inr }}</span></div>
+    <div class="flex justify-between"><span>2. {{ '50%' if result.is_metro else '40%' }} of Basic Salary</span><span class="font-medium">{{ result.option2_pct_of_basic | inr }}</span></div>
+    <div class="flex justify-between"><span>3. Rent paid – 10% of Basic</span><span class="font-medium">{{ result.option3_rent_minus_10pct | inr }}</span></div>
+    <div class="flex justify-between border-t border-gray-200 dark:border-gray-600 pt-2 font-bold text-gray-800 dark:text-gray-200">
+      <span>Exemption = Minimum</span><span>{{ result.exemption | inr }}</span>
+    </div>
+  </div>
+</div>
+
+{# ── Advance Tax result ──────────────────────────────────────────────── #}
+{% elif result.required is defined %}
+{% if not result.required %}
+<div class="bg-green-50 dark:bg-green-900/20 border border-green-200 rounded-xl p-5">
+  <p class="font-semibold text-green-700 dark:text-green-400">✅ No advance tax required</p>
+  <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Your tax liability is below ₹{{ result.threshold | inr }} threshold.</p>
+</div>
+{% else %}
+<div class="space-y-3">
+  <div class="bg-primary/5 dark:bg-primary/10 rounded-xl p-4">
+    <p class="text-sm text-gray-600 dark:text-gray-400">Net Advance Tax Liability</p>
+    <p class="text-2xl font-bold text-primary dark:text-blue-400 mt-1">{{ result.net_liability | inr }}</p>
+  </div>
+  <div class="space-y-2">
+    {% for inst in result.schedule %}
+    <div class="flex items-center justify-between bg-gray-50 dark:bg-gray-700 rounded-xl px-4 py-3">
+      <div>
+        <p class="font-medium text-sm text-gray-900 dark:text-white">{{ inst.date }}</p>
+        <p class="text-xs text-gray-400">{{ inst.cumulative_pct | int }}% of total</p>
+      </div>
+      <div class="text-right">
+        <p class="font-bold text-gray-900 dark:text-white">{{ inst.installment | inr }}</p>
+        <p class="text-xs text-gray-400">Installment</p>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+{# ── CTC to Take-Home result ─────────────────────────────────────── #}
+{% elif result.ctc is defined %}
+<div class="space-y-4">
+  <div class="bg-primary/5 dark:bg-primary/10 border border-primary/20 rounded-xl p-5 text-center">
+    <p class="text-sm text-gray-500 dark:text-gray-400">Monthly Take-Home</p>
+    <p class="text-3xl font-bold text-primary dark:text-blue-400 mt-1">{{ result.take_home_monthly | inr }}</p>
+    <p class="text-xs text-gray-400 mt-1">Annual: {{ result.take_home_annual | inr }}</p>
+  </div>
+  <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-4">
+    <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-3">Monthly Payslip Estimate</p>
+    <div class="space-y-2 text-sm">
+      {% for label, val, color in [
+        ('Basic Salary', result.basic_monthly, 'text-gray-700 dark:text-gray-300'),
+        ('HRA', result.hra_monthly, 'text-gray-700 dark:text-gray-300'),
+        ('Special Allowance', result.special_allowance_monthly, 'text-gray-700 dark:text-gray-300'),
+      ] %}
+      <div class="flex justify-between {{ color }}">
+        <span>{{ label }}</span><span class="font-medium">{{ val | inr }}</span>
+      </div>
+      {% endfor %}
+      <div class="border-t border-gray-200 dark:border-gray-600 pt-2 space-y-1.5">
+        {% for label, val in [('Employee PF (12%)', result.employee_pf_monthly), ('TDS (monthly)', result.tds_monthly), ('Professional Tax', result.prof_tax_monthly)] %}
+        <div class="flex justify-between text-red-600 dark:text-red-400">
+          <span>– {{ label }}</span><span class="font-medium">{{ val | inr }}</span>
+        </div>
+        {% endfor %}
+      </div>
+      <div class="border-t border-gray-200 dark:border-gray-600 pt-2 flex justify-between font-bold text-gray-900 dark:text-white">
+        <span>Take-Home</span><span>{{ result.take_home_monthly | inr }}</span>
+      </div>
+    </div>
+  </div>
+  <div class="grid grid-cols-2 gap-3 text-xs">
+    <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-3">
+      <p class="text-gray-400">Effective Tax Rate</p>
+      <p class="font-bold text-gray-900 dark:text-white mt-0.5">{{ result.effective_rate }}%</p>
+    </div>
+    <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-3">
+      <p class="text-gray-400">Employer PF + Gratuity</p>
+      <p class="font-bold text-gray-900 dark:text-white mt-0.5">{{ (result.employer_pf_annual + result.gratuity_annual) | inr }}/yr</p>
+    </div>
+  </div>
+</div>
+
+{# ── 80D Health Insurance result ─────────────────────────────────── #}
+{% elif result.self_deduction is defined %}
+<div class="space-y-3">
+  <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-5 text-center">
+    <p class="text-sm text-gray-600 dark:text-gray-400">Total 80D Deduction</p>
+    <p class="text-3xl font-bold text-green-600 dark:text-green-400 mt-1">{{ result.total_deduction | inr }}</p>
+    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Tax Saved: <strong class="text-green-600">{{ result.tax_saved | inr }}</strong> (at {{ result.marginal_rate_pct | int }}% + cess)</p>
+  </div>
+  <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 space-y-2 text-sm">
+    <div class="flex justify-between">
+      <span class="text-gray-600 dark:text-gray-400">Self + Family deduction</span>
+      <span class="font-medium">{{ result.self_deduction | inr }} <span class="text-xs text-gray-400">(limit {{ result.self_limit | inr }})</span></span>
+    </div>
+    <div class="flex justify-between">
+      <span class="text-gray-600 dark:text-gray-400">Parents deduction</span>
+      <span class="font-medium">{{ result.parents_deduction | inr }} <span class="text-xs text-gray-400">(limit {{ result.parents_limit | inr }})</span></span>
+    </div>
+    <div class="border-t border-gray-200 dark:border-gray-600 pt-2 flex justify-between font-bold text-gray-900 dark:text-white">
+      <span>Total 80D</span><span>{{ result.total_deduction | inr }}</span>
+    </div>
+  </div>
+  {% if result.self_premium > result.self_limit or result.parents_premium > result.parents_limit %}
+  <div class="text-xs text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800 rounded-lg p-3">
+    ⚠ Your premium exceeds the section limit — deduction is capped at the allowed maximum.
+  </div>
+  {% endif %}
+</div>
+
+{# ── TDS on Salary result ─────────────────────────────────────────── #}
+{% elif result.tds_result is defined %}
+<div class="space-y-4">
+  <div class="grid grid-cols-2 gap-3">
+    <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4 text-center">
+      <p class="text-xs text-gray-500 dark:text-gray-400">Monthly TDS</p>
+      <p class="text-2xl font-bold text-red-600 dark:text-red-400 mt-1">{{ result.monthly_tds | inr }}</p>
+    </div>
+    <div class="bg-primary/5 dark:bg-primary/10 border border-primary/20 rounded-xl p-4 text-center">
+      <p class="text-xs text-gray-500 dark:text-gray-400">Take-Home/Month</p>
+      <p class="text-2xl font-bold text-primary dark:text-blue-400 mt-1">{{ result.take_home_monthly | inr }}</p>
+    </div>
+  </div>
+  <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 space-y-2 text-sm">
+    <div class="flex justify-between text-gray-600 dark:text-gray-400">
+      <span>Annual Tax (incl. cess)</span><span class="font-medium">{{ result.annual_tax | inr }}</span>
+    </div>
+    <div class="flex justify-between text-gray-600 dark:text-gray-400">
+      <span>Effective Tax Rate</span><span class="font-medium">{{ result.effective_rate }}%</span>
+    </div>
+    <div class="flex justify-between text-gray-600 dark:text-gray-400">
+      <span>Regime</span><span class="font-medium capitalize">{{ result.regime }} Regime</span>
+    </div>
+  </div>
+  <p class="text-xs text-gray-400">Employer deducts this TDS and deposits to government monthly. Submit investment proofs to reduce it.</p>
+</div>
+
+{# ── Refund / Demand result ───────────────────────────────────────── #}
+{% elif result.is_refund is defined %}
+<div class="space-y-4">
+  {% if result.is_refund %}
+  <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-5 text-center">
+    <p class="text-sm text-gray-600 dark:text-gray-400">Estimated Tax Refund</p>
+    <p class="text-3xl font-bold text-green-600 dark:text-green-400 mt-1">{{ result.refund | inr }}</p>
+    <p class="text-xs text-gray-400 mt-1">File ITR to claim this refund. Usually credited in 20–45 days.</p>
+  </div>
+  {% else %}
+  <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-5 text-center">
+    <p class="text-sm text-gray-600 dark:text-gray-400">Tax Demand (You Owe)</p>
+    <p class="text-3xl font-bold text-red-600 dark:text-red-400 mt-1">{{ result.demand | inr }}</p>
+    <p class="text-xs text-gray-400 mt-1">Pay via Challan 280 before filing ITR to avoid interest (Sec 234B).</p>
+  </div>
+  {% endif %}
+  <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 space-y-2 text-sm">
+    {% for label, val in [('Actual Tax Payable', result.total_tax), ('TDS Deducted', result.tds_deducted), ('Advance Tax Paid', result.advance_tax_paid), ('Total Tax Paid', result.total_paid)] %}
+    <div class="flex justify-between text-gray-600 dark:text-gray-400">
+      <span>{{ label }}</span><span class="font-medium">{{ val | inr }}</span>
+    </div>
+    {% endfor %}
+    <div class="border-t border-gray-200 dark:border-gray-600 pt-2 flex justify-between font-bold {% if result.is_refund %}text-green-600 dark:text-green-400{% else %}text-red-600 dark:text-red-400{% endif %}">
+      <span>{{ 'Refund' if result.is_refund else 'Tax Due' }}</span>
+      <span>{{ (result.refund if result.is_refund else result.demand) | inr }}</span>
+    </div>
+  </div>
+</div>
+
+{# ── Home Loan Tax Benefit result ─────────────────────────────────── #}
+{% elif result.emi_monthly is defined %}
+<div class="space-y-4">
+  <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-5 text-center">
+    <p class="text-sm text-gray-600 dark:text-gray-400">Tax Saved (Year {{ result.loan_year }})</p>
+    <p class="text-3xl font-bold text-green-600 dark:text-green-400 mt-1">{{ result.tax_saved | inr }}</p>
+  </div>
+  <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 space-y-2 text-sm">
+    <div class="flex justify-between text-gray-600 dark:text-gray-400">
+      <span>Monthly EMI</span><span class="font-bold text-gray-900 dark:text-white">{{ result.emi_monthly | inr }}</span>
+    </div>
+    <div class="border-t border-gray-200 dark:border-gray-600 pt-2 space-y-1.5">
+      <div class="flex justify-between text-gray-600 dark:text-gray-400">
+        <span>Annual Interest Paid</span><span class="font-medium">{{ result.annual_interest | inr }}</span>
+      </div>
+      <div class="flex justify-between text-gray-600 dark:text-gray-400">
+        <span>Annual Principal Repaid</span><span class="font-medium">{{ result.annual_principal | inr }}</span>
+      </div>
+    </div>
+    <div class="border-t border-gray-200 dark:border-gray-600 pt-2 space-y-1.5">
+      <div class="flex justify-between text-green-600 dark:text-green-400">
+        <span>Sec 24(b) Interest Deduction</span><span class="font-medium">{{ result.sec24_deduction | inr }}</span>
+      </div>
+      {% if result.annual_interest > result.section_24b_limit and result.is_self_occupied %}
+      <p class="text-xs text-amber-600 dark:text-amber-400">⚠ Interest exceeds ₹2L cap for self-occupied. Remaining {{ (result.annual_interest - result.section_24b_limit) | inr }} not deductible.</p>
+      {% endif %}
+      <div class="flex justify-between text-green-600 dark:text-green-400">
+        <span>80C Principal Deduction</span><span class="font-medium">{{ result.sec80c_deduction | inr }}</span>
+      </div>
+      <div class="flex justify-between font-bold text-gray-900 dark:text-white border-t border-gray-200 dark:border-gray-600 pt-2">
+        <span>Total Deduction</span><span>{{ result.total_deduction | inr }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+{# ── NPS Tax Benefit result ───────────────────────────────────────── #}
+{% elif result.ccd1b_extra is defined %}
+<div class="space-y-4">
+  <div class="bg-primary/5 dark:bg-primary/10 border border-primary/20 rounded-xl p-5 text-center">
+    <p class="text-sm text-gray-500 dark:text-gray-400">Total NPS Tax Saved</p>
+    <p class="text-3xl font-bold text-primary dark:text-blue-400 mt-1">{{ result.tax_saved | inr }}</p>
+    <p class="text-xs text-gray-400 mt-1">On extra ₹50K (80CCD 1B) + employer NPS (80CCD 2)</p>
+  </div>
+  <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 space-y-2 text-sm">
+    <p class="text-xs font-semibold text-gray-500 uppercase mb-2">NPS Deduction Breakdown</p>
+    <div class="flex justify-between text-gray-600 dark:text-gray-400">
+      <span>80CCD(1) within 80C</span><span class="font-medium">{{ result.ccd1_within_80c | inr }}</span>
+    </div>
+    <div class="flex justify-between text-green-600 dark:text-green-400">
+      <span>80CCD(1B) Extra <span class="text-xs">(beyond 80C!)</span></span><span class="font-bold">{{ result.ccd1b_extra | inr }}</span>
+    </div>
+    <div class="flex justify-between text-blue-600 dark:text-blue-400">
+      <span>80CCD(2) Employer NPS <span class="text-xs">(new regime too)</span></span><span class="font-bold">{{ result.ccd2_employer | inr }}</span>
+    </div>
+    <div class="border-t border-gray-200 dark:border-gray-600 pt-2 flex justify-between font-bold text-gray-900 dark:text-white">
+      <span>Total NPS Deduction</span><span>{{ result.total_nps_extra_deduction | inr }}</span>
+    </div>
+  </div>
+  {% if result.ccd2_employer > 0 %}
+  <div class="text-xs text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+    💡 Employer NPS under 80CCD(2) is deductible even in New Regime. Ask HR to structure this.
+  </div>
+  {% endif %}
+</div>
+
+{# ── ITR Form Selector result ─────────────────────────────────────── #}
+{% elif result.form is defined %}
+<div class="space-y-4">
+  {% set color_map = {'green': 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 text-green-700 dark:text-green-400', 'blue': 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-400', 'purple': 'bg-purple-50 dark:bg-purple-900/20 border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-400', 'orange': 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800 text-orange-700 dark:text-orange-400'} %}
+  <div class="{{ color_map[result.color] }} border rounded-xl p-5 text-center">
+    <p class="text-sm font-medium mb-1">File This ITR Form</p>
+    <p class="text-4xl font-bold mt-1">{{ result.form }}</p>
+    <p class="text-sm mt-2 opacity-80">{{ result.description }}</p>
+  </div>
+  <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-4">
+    <p class="text-xs font-semibold text-gray-500 uppercase mb-3">Why this form?</p>
+    <ul class="space-y-2">
+      {% for reason in result.reasons %}
+      <li class="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-300">
+        <span class="text-green-500 mt-0.5 flex-shrink-0">✓</span>
+        {{ reason }}
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 text-xs text-gray-500 dark:text-gray-400">
+    <p class="font-medium text-gray-700 dark:text-gray-300 mb-2">Quick Reference</p>
+    <div class="space-y-1">
+      <p><strong>ITR-1:</strong> Salary only, income &lt; ₹50L, no capital gains</p>
+      <p><strong>ITR-2:</strong> Salary + capital gains, foreign assets, director</p>
+      <p><strong>ITR-3:</strong> Business income, F&amp;O trading, actual books</p>
+      <p><strong>ITR-4:</strong> Presumptive income (44ADA/44AD), income &lt; ₹50L</p>
+    </div>
+  </div>
+</div>
+
+{# ── 80G Donation result ──────────────────────────────────────────── #}
+{% elif result.donation_100pct is defined %}
+<div class="space-y-3">
+  <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-5 text-center">
+    <p class="text-sm text-gray-600 dark:text-gray-400">Total 80G Deduction</p>
+    <p class="text-3xl font-bold text-green-600 dark:text-green-400 mt-1">{{ result.total_deduction | inr }}</p>
+    <p class="text-sm text-gray-500 mt-1">Tax Saved: <strong class="text-green-600">{{ result.tax_saved | inr }}</strong></p>
+  </div>
+  <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 space-y-2 text-sm">
+    <div class="flex justify-between text-gray-600 dark:text-gray-400">
+      <span>100% deductible donations</span><span class="font-medium">{{ result.deduction_100pct | inr }}</span>
+    </div>
+    <div class="flex justify-between text-gray-600 dark:text-gray-400">
+      <span>50% deductible donations (50% of {{ result.donation_50pct | inr }})</span><span class="font-medium">{{ result.deduction_50pct | inr }}</span>
+    </div>
+    <div class="border-t border-gray-200 dark:border-gray-600 pt-2 flex justify-between font-bold text-gray-900 dark:text-white">
+      <span>Total Deduction</span><span>{{ result.total_deduction | inr }}</span>
+    </div>
+  </div>
+</div>
+
+{# ── 80TTA/80TTB Interest result ──────────────────────────────────── #}
+{% elif result.section is defined %}
+<div class="space-y-3">
+  <div class="{% if result.deduction > 0 %}bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800{% else %}bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700{% endif %} border rounded-xl p-5 text-center">
+    <p class="text-sm text-gray-600 dark:text-gray-400">{{ result.section }} Deduction</p>
+    <p class="text-3xl font-bold {% if result.deduction > 0 %}text-green-600 dark:text-green-400{% else %}text-gray-500{% endif %} mt-1">{{ result.deduction | inr }}</p>
+    <p class="text-xs text-gray-400 mt-1">Limit: {{ result.limit | inr }} | Tax saved: {{ result.tax_saved | inr }}</p>
+  </div>
+  <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 space-y-2 text-sm">
+    <div class="flex justify-between text-gray-600 dark:text-gray-400">
+      <span>Savings account interest</span><span>{{ result.savings_interest | inr }}</span>
+    </div>
+    {% if result.is_senior_citizen %}
+    <div class="flex justify-between text-gray-600 dark:text-gray-400">
+      <span>FD / RD interest</span><span>{{ result.fd_interest | inr }}</span>
+    </div>
+    {% endif %}
+    <div class="flex justify-between text-gray-600 dark:text-gray-400">
+      <span>Taxable interest (after deduction)</span><span class="font-medium text-red-500">{{ result.taxable_interest | inr }}</span>
+    </div>
+  </div>
+  {% if not result.is_senior_citizen and result.fd_interest > 0 %}
+  <p class="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800 rounded-lg p-3">⚠ 80TTA does not cover FD/RD interest (only savings account). FD interest is fully taxable. Senior citizens can claim 80TTB.</p>
+  {% endif %}
+</div>
+
+{# ── 44AD Business Presumptive result ─────────────────────────────── #}
+{% elif result.gross_turnover is defined %}
+<div class="space-y-4">
+  <div class="bg-primary/5 dark:bg-primary/10 border border-primary/20 rounded-xl p-5">
+    <p class="text-sm text-gray-500 dark:text-gray-400">Presumptive Income ({{ result.presumptive_pct }}% of turnover)</p>
+    <p class="text-2xl font-bold text-primary dark:text-blue-400 mt-1">{{ result.presumptive_income | inr }}</p>
+    <p class="text-xs text-gray-400 mt-1">On turnover of {{ result.gross_turnover | inr }}</p>
+  </div>
+  <div class="grid grid-cols-2 gap-3">
+    {% for key, label in [('new_regime','New Regime'),('old_regime','Old Regime')] %}
+    {% set r = result[key] %}
+    <div class="{% if result.winner == key.split('_')[0] %}ring-2 ring-green-400{% endif %} bg-gray-50 dark:bg-gray-700 rounded-xl p-4">
+      <p class="text-xs font-semibold text-gray-400 uppercase mb-1">{{ label }}</p>
+      <p class="text-xl font-bold text-gray-900 dark:text-white">{{ r.total_tax | inr }}</p>
+      <p class="text-xs text-gray-400">{{ r.effective_rate }}% effective rate</p>
+      {% if result.winner == key.split('_')[0] %}<p class="text-xs text-green-600 mt-1 font-semibold">✓ Recommended</p>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% if result.gross_turnover > result.limit %}
+  <p class="text-xs text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800 rounded-lg p-3">⚠ Turnover exceeds ₹3Cr limit for 44AD. You must maintain actual books of accounts.</p>
+  {% endif %}
+</div>
+
+{# ── 44ADA Professionals Presumptive result ────────────────────────── #}
+{% elif result.gross_receipts is defined and result.new_regime is defined %}
+<div class="space-y-4">
+  <div class="bg-primary/5 dark:bg-primary/10 border border-primary/20 rounded-xl p-5">
+    <p class="text-sm text-gray-500 dark:text-gray-400">Presumptive Income (50% of gross receipts)</p>
+    <p class="text-2xl font-bold text-primary dark:text-blue-400 mt-1">{{ result.presumptive_income | inr }}</p>
+    <p class="text-xs text-gray-400 mt-1">On gross receipts of {{ result.gross_receipts | inr }}</p>
+  </div>
+  <div class="grid grid-cols-2 gap-3">
+    {% for key, label in [('new_regime','New Regime'),('old_regime','Old Regime')] %}
+    {% set r = result[key] %}
+    <div class="{% if result.winner == key.split('_')[0] %}ring-2 ring-green-400{% endif %} bg-gray-50 dark:bg-gray-700 rounded-xl p-4">
+      <p class="text-xs font-semibold text-gray-400 uppercase mb-1">{{ label }}</p>
+      <p class="text-xl font-bold text-gray-900 dark:text-white">{{ r.total_tax | inr }}</p>
+      <p class="text-xs text-gray-400">{{ r.effective_rate }}% effective rate</p>
+      {% if result.winner == key.split('_')[0] %}<p class="text-xs text-green-600 mt-1 font-semibold">✓ Recommended</p>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  <p class="text-xs text-gray-400 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">Section 44ADA: Professionals (CA, doctor, lawyer, engineer) with gross receipts up to ₹75L can declare 50% as presumptive income — no need to maintain books.</p>
+</div>
+
+{# ── Freelancer Tax Plan result ───────────────────────────────────── #}
+{% elif result.quarterly_tax is defined and result.itr_form is defined %}
+<div class="space-y-4">
+  <div class="bg-primary/5 dark:bg-primary/10 border border-primary/20 rounded-xl p-5">
+    <p class="text-sm text-gray-500 dark:text-gray-400">Annual Tax (on {{ result.presumptive_income | inr }} presumptive income)</p>
+    <p class="text-2xl font-bold text-primary dark:text-blue-400 mt-1">{{ result.total_tax | inr }}</p>
+    <p class="text-xs text-gray-400 mt-1">Effective rate: {{ result.effective_rate }}%</p>
+  </div>
+  <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 space-y-2 text-sm">
+    <div class="flex justify-between text-gray-600 dark:text-gray-400"><span>Gross Receipts</span><span class="font-medium">{{ result.gross_receipts | inr }}</span></div>
+    <div class="flex justify-between text-gray-600 dark:text-gray-400"><span>Presumptive Income (50%)</span><span class="font-medium">{{ result.presumptive_income | inr }}</span></div>
+    <div class="flex justify-between text-gray-600 dark:text-gray-400"><span>ITR Form to File</span><span class="font-bold text-primary">{{ result.itr_form }}</span></div>
+    {% if result.quarterly_tax > 0 %}
+    <div class="flex justify-between text-orange-600 dark:text-orange-400"><span>Approx. Quarterly Advance Tax</span><span class="font-bold">{{ result.quarterly_tax | inr }}</span></div>
+    {% endif %}
+  </div>
+</div>
+
+{# ── Property Capital Gains result ───────────────────────────────── #}
+{% elif result.holding_months is defined %}
+<div class="space-y-3">
+  {% if result.gain_type == 'STCG' %}
+  <div class="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-5">
+    <p class="text-sm font-semibold text-amber-700 dark:text-amber-400">Short-Term Capital Gain (STCG)</p>
+    <p class="text-2xl font-bold text-amber-700 dark:text-amber-400 mt-1">{{ result.total_gain | inr }}</p>
+    <p class="text-xs text-amber-600 dark:text-amber-400 mt-1">Taxed at your income slab rate — add to total income</p>
+  </div>
+  {% else %}
+  <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-5">
+    <p class="text-sm font-semibold text-gray-600 dark:text-gray-400">Long-Term Capital Gain (LTCG)</p>
+    <p class="text-2xl font-bold text-green-600 dark:text-green-400 mt-1">{{ result.total_gain | inr }}</p>
+    <div class="flex justify-between text-sm mt-2"><span class="text-gray-500">Tax @{{ result.tax_rate }}%</span><span class="font-bold text-red-500">{{ result.total_tax | inr }}</span></div>
+    <div class="flex justify-between text-sm"><span class="text-gray-500">Net Profit</span><span class="font-bold text-green-600">{{ result.net_profit | inr }}</span></div>
+  </div>
+  {% endif %}
+  <p class="text-xs text-gray-400 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">{{ result.note }}</p>
+</div>
+
+{# ── Mutual Fund Tax result ────────────────────────────────────────── #}
+{% elif result.fund_type is defined %}
+<div class="space-y-3">
+  {% if result.is_debt %}
+  <div class="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-5">
+    <p class="text-sm font-semibold text-amber-700 dark:text-amber-400">Debt Fund — Taxed as Ordinary Income</p>
+    <p class="text-2xl font-bold text-amber-700 dark:text-amber-400 mt-1">{{ result.total_gain | inr }} gain</p>
+    <p class="text-xs mt-2 text-amber-600 dark:text-amber-400">{{ result.note }}</p>
+  </div>
+  {% else %}
+  <div class="bg-primary/5 dark:bg-primary/10 border border-primary/20 rounded-xl p-5">
+    <p class="text-sm text-gray-500 dark:text-gray-400">{{ result.gain_type }} Tax ({{ result.tax_rate }}% + cess)</p>
+    <p class="text-2xl font-bold text-primary dark:text-blue-400 mt-1">{{ result.total_tax | inr }}</p>
+  </div>
+  <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 space-y-2 text-sm">
+    <div class="flex justify-between text-gray-600 dark:text-gray-400"><span>Total Gain</span><span>{{ result.total_gain | inr }}</span></div>
+    {% if result.exemption %}<div class="flex justify-between text-green-600 dark:text-green-400"><span>LTCG Exemption</span><span>{{ result.exemption | inr }}</span></div>{% endif %}
+    <div class="flex justify-between text-gray-600 dark:text-gray-400"><span>Taxable Gain</span><span>{{ result.taxable_gain | inr }}</span></div>
+    <div class="flex justify-between font-bold text-gray-900 dark:text-white border-t border-gray-200 dark:border-gray-600 pt-2"><span>Net Profit After Tax</span><span class="text-green-600">{{ result.net_profit | inr }}</span></div>
+  </div>
+  {% endif %}
+</div>
+
+{# ── ELSS vs PPF vs NPS result ────────────────────────────────────── #}
+{% elif result.elss is defined %}
+<div class="space-y-3">
+  <p class="text-xs text-gray-500 dark:text-gray-400">Investing {{ result.annual_investment | inr }}/year for {{ result.years }} years</p>
+  {% for key, label, color in [('elss','ELSS','blue'),('ppf','PPF','green'),('nps','NPS','purple')] %}
+  {% set inv = result[key] %}
+  <div class="bg-{{ color }}-50 dark:bg-{{ color }}-900/20 border border-{{ color }}-200 dark:border-{{ color }}-800 rounded-xl p-4">
+    <div class="flex justify-between items-start">
+      <div>
+        <p class="font-semibold text-{{ color }}-700 dark:text-{{ color }}-400">{{ label }}</p>
+        <p class="text-xs text-gray-500 mt-0.5">{{ inv.lock_in }} lock-in | {{ inv.returns }}</p>
+      </div>
+      <div class="text-right">
+        <p class="text-lg font-bold text-gray-900 dark:text-white">{{ inv.net_post_tax | inr }}</p>
+        <p class="text-xs text-gray-400">post-tax maturity</p>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+  <p class="text-xs text-gray-400 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">Tax saved/year under 80C: {{ result.tax_saving_per_year | inr }}. Returns shown are estimates — actual returns vary.</p>
+</div>
+
+{# ── EPF Maturity result ───────────────────────────────────────────── #}
+{% elif result.epf_rate is defined %}
+<div class="space-y-3">
+  <div class="bg-primary/5 dark:bg-primary/10 border border-primary/20 rounded-xl p-5 text-center">
+    <p class="text-sm text-gray-500 dark:text-gray-400">EPF Corpus at Retirement</p>
+    <p class="text-3xl font-bold text-primary dark:text-blue-400 mt-1">{{ result.maturity | inr }}</p>
+    <p class="text-xs {% if result.is_tax_free %}text-green-500{% else %}text-red-500{% endif %} mt-1">{{ result.tax_note }}</p>
+  </div>
+  <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 space-y-2 text-sm">
+    <div class="flex justify-between text-gray-600 dark:text-gray-400"><span>Monthly contribution (yours)</span><span>{{ result.employee_monthly | inr }}</span></div>
+    <div class="flex justify-between text-gray-600 dark:text-gray-400"><span>Monthly contribution (employer)</span><span>{{ result.employer_monthly | inr }}</span></div>
+    <div class="flex justify-between text-gray-600 dark:text-gray-400"><span>Annual total</span><span>{{ result.annual_contribution | inr }}</span></div>
+    <div class="flex justify-between text-gray-600 dark:text-gray-400"><span>Years / Rate</span><span>{{ result.years }} yrs @ {{ result.epf_rate }}%</span></div>
+  </div>
+</div>
+
+{# ── PPF Maturity result ───────────────────────────────────────────── #}
+{% elif result.ppf_rate is defined %}
+<div class="space-y-3">
+  <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-5 text-center">
+    <p class="text-sm text-gray-600 dark:text-gray-400">PPF Maturity Value (Tax-Free)</p>
+    <p class="text-3xl font-bold text-green-600 dark:text-green-400 mt-1">{{ result.maturity | inr }}</p>
+  </div>
+  <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 space-y-2 text-sm">
+    <div class="flex justify-between text-gray-600 dark:text-gray-400"><span>Total Invested</span><span>{{ result.total_invested | inr }}</span></div>
+    <div class="flex justify-between text-green-600 dark:text-green-400"><span>Interest Earned</span><span class="font-bold">{{ result.interest_earned | inr }}</span></div>
+    <div class="flex justify-between font-bold text-gray-900 dark:text-white border-t border-gray-200 dark:border-gray-600 pt-2"><span>Maturity (Tax-Free)</span><span>{{ result.maturity | inr }}</span></div>
+  </div>
+  <p class="text-xs text-gray-400 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">{{ result.note }}</p>
+</div>
+
+{# ── Gratuity result ───────────────────────────────────────────────── #}
+{% elif result.gratuity is defined %}
+<div class="space-y-3">
+  <div class="bg-primary/5 dark:bg-primary/10 border border-primary/20 rounded-xl p-5 text-center">
+    <p class="text-sm text-gray-500 dark:text-gray-400">Gratuity Amount</p>
+    <p class="text-3xl font-bold text-primary dark:text-blue-400 mt-1">{{ result.gratuity | inr }}</p>
+    <p class="text-xs text-green-500 mt-1">Tax-Free: {{ result.tax_free_gratuity | inr }}</p>
+  </div>
+  <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 space-y-2 text-sm">
+    <div class="flex justify-between text-gray-600 dark:text-gray-400"><span>Formula</span><span class="font-mono text-xs">{{ result.formula }}</span></div>
+    <div class="flex justify-between text-gray-600 dark:text-gray-400"><span>Years of Service</span><span>{{ result.years_of_service }}</span></div>
+    {% if not result.is_govt and result.taxable_gratuity > 0 %}
+    <div class="flex justify-between text-red-500"><span>Taxable Gratuity (above ₹20L)</span><span>{{ result.taxable_gratuity | inr }}</span></div>
+    {% else %}
+    <p class="text-xs text-green-600 dark:text-green-400">✓ Fully tax-exempt {% if result.is_govt %}(government employee){% else %}(within ₹20L limit){% endif %}</p>
+    {% endif %}
+  </div>
+</div>
+
+{# ── Senior Citizen Tax result ─────────────────────────────────────── #}
+{% elif result.ttb_deduction is defined %}
+<div class="space-y-4">
+  <div class="grid grid-cols-2 gap-3">
+    {% for key, label in [('new_regime','New Regime'),('old_regime','Old Regime')] %}
+    {% set r = result[key] %}
+    <div class="{% if result.winner == key.split('_')[0] %}ring-2 ring-green-400{% endif %} bg-gray-50 dark:bg-gray-700 rounded-xl p-4">
+      <p class="text-xs font-semibold text-gray-400 uppercase mb-1">{{ label }}</p>
+      <p class="text-xl font-bold text-gray-900 dark:text-white">{{ r.total_tax | inr }}</p>
+      <p class="text-xs text-gray-400">{{ r.effective_rate }}% effective</p>
+      {% if result.winner == key.split('_')[0] %}<p class="text-xs text-green-600 mt-1 font-semibold">✓ Saves more</p>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  <div class="bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-800 rounded-xl p-4 text-sm">
+    <p class="font-medium text-blue-700 dark:text-blue-400 mb-2">Senior Citizen Deductions (Old Regime)</p>
+    <div class="space-y-1 text-blue-600 dark:text-blue-300">
+      <div class="flex justify-between"><span>80TTB (FD interest)</span><span>{{ result.ttb_deduction | inr }} (limit {{ result.ttb_limit | inr }})</span></div>
+      <div class="flex justify-between"><span>80D (health insurance)</span><span>{{ result.sec_80d_deduction | inr }}</span></div>
+    </div>
+  </div>
+</div>
+
+{# ── Surcharge result ─────────────────────────────────────────────── #}
+{% elif result.surcharge_rate is defined %}
+<div class="space-y-3">
+  <div class="{% if result.surcharge_rate > 0 %}bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800{% else %}bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800{% endif %} border rounded-xl p-5 text-center">
+    <p class="text-sm text-gray-500 dark:text-gray-400">Surcharge Rate</p>
+    <p class="text-4xl font-bold {% if result.surcharge_rate > 0 %}text-red-600 dark:text-red-400{% else %}text-green-600 dark:text-green-400{% endif %} mt-1">{{ result.surcharge_rate }}%</p>
+    {% if result.surcharge_rate == 0 %}<p class="text-xs text-green-500 mt-1">✓ No surcharge — income below ₹50 lakh</p>{% endif %}
+  </div>
+  <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 space-y-2 text-sm">
+    <div class="flex justify-between text-gray-600 dark:text-gray-400"><span>Base Tax (on slabs)</span><span>{{ result.base_tax | inr }}</span></div>
+    <div class="flex justify-between text-red-500"><span>Surcharge ({{ result.surcharge_rate }}%)</span><span>{{ result.surcharge_amount | inr }}</span></div>
+    <div class="flex justify-between text-gray-600 dark:text-gray-400"><span>Health & Education Cess (4%)</span><span>{{ result.cess | inr }}</span></div>
+    <div class="flex justify-between font-bold text-gray-900 dark:text-white border-t border-gray-200 dark:border-gray-600 pt-2"><span>Total Tax</span><span>{{ result.total_tax | inr }}</span></div>
+    <div class="flex justify-between text-gray-500"><span>Effective Rate</span><span>{{ result.effective_rate }}%</span></div>
+  </div>
+</div>
+
+{# ── GST Composition result ───────────────────────────────────────── #}
+{% elif result.composition_rate is defined %}
+<div class="space-y-3">
+  {% if not result.eligible %}
+  <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4">
+    <p class="text-sm font-semibold text-red-700 dark:text-red-400">⚠ Not eligible for Composition Scheme</p>
+    <p class="text-xs text-gray-500 mt-1">Your turnover of {{ result.annual_turnover | inr }} exceeds the limit of {{ result.turnover_limit | inr }}.</p>
+  </div>
+  {% else %}
+  <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-5 text-center">
+    <p class="text-sm text-gray-600 dark:text-gray-400">Annual GST under Composition ({{ result.composition_rate }}%)</p>
+    <p class="text-3xl font-bold text-green-600 dark:text-green-400 mt-1">{{ result.annual_tax | inr }}</p>
+    <p class="text-xs text-gray-400 mt-1">Quarterly payment: {{ result.quarterly_tax | inr }}</p>
+  </div>
+  <p class="text-xs text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-800 rounded-lg p-3">💡 Composition scheme = flat rate on turnover. No ITC claim. Simple quarterly GSTR-4 filing.</p>
+  {% endif %}
+</div>
+
+{# ── GSTR Late Fee result ─────────────────────────────────────────── #}
+{% elif result.late_fee is defined %}
+<div class="space-y-3">
+  <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-5 text-center">
+    <p class="text-sm text-gray-600 dark:text-gray-400">Total Late Fee Liability</p>
+    <p class="text-3xl font-bold text-red-600 dark:text-red-400 mt-1">{{ result.total_liability | inr }}</p>
+  </div>
+  <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 space-y-2 text-sm">
+    <div class="flex justify-between text-gray-600 dark:text-gray-400"><span>Return Type</span><span class="font-medium">{{ result.return_type }}</span></div>
+    <div class="flex justify-between text-gray-600 dark:text-gray-400"><span>Days Late</span><span class="font-medium">{{ result.days_late }}</span></div>
+    <div class="flex justify-between text-gray-600 dark:text-gray-400"><span>Late Fee (₹{{ result.daily_fee }}/day)</span><span class="font-medium">{{ result.late_fee | inr }}</span></div>
+    {% if result.interest_estimate > 0 %}
+    <div class="flex justify-between text-red-500"><span>Interest @18% (estimate)</span><span>{{ result.interest_estimate | inr }}</span></div>
+    {% endif %}
+    <p class="text-xs text-gray-400 mt-2">Max cap: {{ result.max_fee | inr }}</p>
+  </div>
+</div>
+
+{# ── 80E Education Loan result ────────────────────────────────────── #}
+{% elif result.max_years is defined %}
+<div class="space-y-3">
+  {% if result.deduction > 0 %}
+  <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-5 text-center">
+    <p class="text-sm text-gray-600 dark:text-gray-400">Section 80E Deduction (Year {{ result.loan_year }})</p>
+    <p class="text-3xl font-bold text-green-600 dark:text-green-400 mt-1">{{ result.deduction | inr }}</p>
+    <p class="text-sm text-gray-500 mt-1">Tax Saved: <strong class="text-green-600">{{ result.tax_saved | inr }}</strong></p>
+  </div>
+  {% else %}
+  <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-5 text-center">
+    <p class="text-sm font-semibold text-red-700 dark:text-red-400">80E deduction not available</p>
+    <p class="text-xs text-gray-400 mt-1">Exceeded {{ result.max_years }}-year limit</p>
+  </div>
+  {% endif %}
+  <p class="text-xs text-gray-400 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">{{ result.note }}</p>
+</div>
+
+{# ── Professional Tax result ──────────────────────────────────────── #}
+{% elif result.monthly_pt is defined %}
+<div class="space-y-3">
+  <div class="{% if result.has_pt %}bg-primary/5 dark:bg-primary/10 border-primary/20{% else %}bg-green-50 dark:bg-green-900/20 border-green-200{% endif %} border rounded-xl p-5 text-center">
+    <p class="text-sm text-gray-500 dark:text-gray-400">Professional Tax ({{ result.state_name }})</p>
+    <p class="text-3xl font-bold text-primary dark:text-blue-400 mt-1">{{ result.annual_pt | inr }}/year</p>
+    <p class="text-xs text-gray-400 mt-1">₹{{ result.monthly_pt }}/month</p>
+  </div>
+  <p class="text-xs text-gray-400 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">{{ result.note }}</p>
+</div>
+
+{# ── NPS vs EPF Comparison result ─────────────────────────────────── #}
+{% elif result.epf is defined and result.nps is defined %}
+<div class="space-y-3">
+  <p class="text-xs text-gray-500 dark:text-gray-400">{{ result.basic_salary | inr }}/mo basic × {{ result.years }} years</p>
+  {% for key, label, color in [('epf','EPF','blue'),('nps','NPS','purple')] %}
+  {% set inv = result[key] %}
+  <div class="bg-{{ color }}-50 dark:bg-{{ color }}-900/20 border border-{{ color }}-200 dark:border-{{ color }}-800 rounded-xl p-4">
+    <div class="flex justify-between items-start">
+      <div>
+        <p class="font-semibold text-{{ color }}-700 dark:text-{{ color }}-400">{{ label }}</p>
+        <p class="text-xs text-gray-500 mt-0.5">{{ inv.lock_in }} | ~{{ inv.interest_rate }}% returns</p>
+        <p class="text-xs text-gray-400 mt-0.5">₹{{ inv.employee_monthly }}/mo contribution</p>
+      </div>
+      <div class="text-right">
+        <p class="text-lg font-bold text-gray-900 dark:text-white">{{ inv.corpus | inr }}</p>
+        <p class="text-xs text-gray-400">corpus at maturity</p>
+        {% if result.winner == key %}<p class="text-xs text-green-600 font-semibold mt-1">✓ Higher corpus</p>{% endif %}
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+  <p class="text-xs text-gray-400 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">NPS: 60% lump sum is tax-free; 40% must be used for annuity (taxable income). EPF is fully tax-free after 5 years. Returns shown are estimates.</p>
+</div>
+
+{# ── Tax Saving Checklist result ──────────────────────────────────── #}
+{% elif result.items_count is defined %}
+<div class="space-y-3">
+  {% if result.total_potential_saving > 0 %}
+  <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-4 text-center">
+    <p class="text-sm text-gray-600 dark:text-gray-400">Potential Tax Saving</p>
+    <p class="text-2xl font-bold text-green-600 dark:text-green-400 mt-1">{{ result.total_potential_saving | inr }}</p>
+  </div>
+  {% endif %}
+  <div class="space-y-2">
+    {% for item in result.items %}
+    <div class="flex items-start gap-3 bg-gray-50 dark:bg-gray-700 rounded-xl p-3">
+      <span class="{% if item.done %}text-green-500{% elif item.priority == 'high' %}text-red-500{% else %}text-amber-500{% endif %} mt-0.5 flex-shrink-0">
+        {% if item.done %}✓{% else %}→{% endif %}
+      </span>
+      <div class="flex-1">
+        <p class="text-xs font-semibold text-gray-500 uppercase">{{ item.section }}</p>
+        <p class="text-sm text-gray-700 dark:text-gray-300 mt-0.5">{{ item.action }}</p>
+        {% if item.saving > 0 %}<p class="text-xs text-green-600 dark:text-green-400 mt-1">Save: {{ item.saving | inr }}</p>{% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+{# ── Fallback for other tools ──────────────────────────────────────── #}
+{% else %}
+<pre class="text-xs text-gray-500 dark:text-gray-400 overflow-auto p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">{{ result }}</pre>
+{% endif %}
+
+{# ── WhatsApp share ────────────────────────────────────────────────── #}
+<div class="mt-4 flex flex-wrap gap-2">
+  <a href="https://wa.me/?text=Check%20out%20this%20free%20tax%20calculator%3A%20{{ request.build_absolute_uri() | urlencode }}"
+     target="_blank" rel="noopener"
+     onclick="gtag && gtag('event', 'whatsapp_share', {tool: '{{ slug | default('') }}'});"
+     class="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white text-xs font-medium px-4 py-2 rounded-lg transition-colors">
+    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+    </svg>
+    Share on WhatsApp
+  </a>
+</div>
+
+{# ── Affiliate CTA ─────────────────────────────────────────────────── #}
+{% include 'components/affiliate_cta.jinja' %}
+
+{# ── Disclaimer ────────────────────────────────────────────────────── #}
+<p class="text-xs text-gray-400 dark:text-gray-500 text-center mt-4">
+  Results are estimates only. Not tax/CA advice. Consult a professional for your specific situation.
+</p>
+
+{% else %}
+<p class="text-sm text-gray-400 dark:text-gray-500 text-center py-8">Enter your details to calculate.</p>
+{% endif %}

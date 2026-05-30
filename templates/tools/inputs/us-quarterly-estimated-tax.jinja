@@ -1,0 +1,38 @@
+<div class="space-y-4">
+  <div>
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Expected Annual Income</label>
+    <div class="relative">
+      <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-semibold">$</span>
+      <input type="number" name="annual_income" min="0" step="1000" value="80000" inputmode="numeric"
+             class="w-full pl-7 pr-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary text-sm">
+    </div>
+  </div>
+
+  <div>
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Income Type</label>
+    <select name="income_type" class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary text-sm">
+      <option value="self_employed">Self-Employed / 1099 (includes SE tax 15.3%)</option>
+      <option value="employee">W-2 Employee with extra income</option>
+    </select>
+  </div>
+
+  <div>
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Filing Status</label>
+    <select name="filing_status" class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary text-sm">
+      <option value="single">Single</option>
+      <option value="married_jointly">Married Filing Jointly</option>
+      <option value="head_of_household">Head of Household</option>
+      <option value="married_separately">Married Filing Separately</option>
+    </select>
+  </div>
+
+  <div>
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Prior Year Tax Paid <span class="text-xs text-gray-400">(for safe harbor — optional)</span></label>
+    <div class="relative">
+      <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-semibold">$</span>
+      <input type="number" name="prior_year_tax" min="0" step="100" value="0" inputmode="numeric"
+             class="w-full pl-7 pr-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary text-sm">
+    </div>
+    <p class="text-xs text-gray-400 mt-1">From last year's Form 1040, Line 24. Used for safe harbor calculation.</p>
+  </div>
+</div>

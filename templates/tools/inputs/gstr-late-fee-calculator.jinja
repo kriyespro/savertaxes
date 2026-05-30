@@ -1,0 +1,27 @@
+{# T32 — GSTR Late Fee Calculator #}
+<div class="space-y-5">
+  <div>
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Return Type</label>
+    <select name="return_type" class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary text-sm">
+      <option value="GSTR-1">GSTR-1 (Monthly sales return)</option>
+      <option value="GSTR-3B">GSTR-3B (Monthly summary return)</option>
+      <option value="GSTR-9">GSTR-9 (Annual return)</option>
+    </select>
+  </div>
+  <div>
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Days of Delay</label>
+    <input type="number" name="days_late" placeholder="e.g. 30" min="1" max="365" inputmode="numeric" class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary text-sm">
+  </div>
+  <div>
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Annual Turnover (for cap calculation)</label>
+    <div class="relative"><span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium">₹</span>
+      <input type="number" name="turnover" placeholder="e.g. 5000000" min="0" inputmode="numeric" class="w-full pl-8 pr-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary text-sm">
+    </div>
+  </div>
+  <div>
+    <label class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
+      <input type="checkbox" name="has_liability" value="false" class="rounded border-gray-300 text-primary" onchange="htmx.trigger('#tool-form','change')">
+      Nil return (no tax liability) — lower late fee (₹20/day)
+    </label>
+  </div>
+</div>

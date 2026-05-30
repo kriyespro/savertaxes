@@ -1,0 +1,1205 @@
+================================================================================
+TAXESSAVER.COM — DEVELOPMENT ROADMAP (INDIA — DJANGO STACK)
+Mobile-First | SEO-Optimized | HTMX-Driven | Jinja2 | Indian Tax System
+Updated: 2026-05-29 | Aligned with CLAUDE.md
+================================================================================
+
+PROGRESS TRACKER
+────────────────
+[DONE] Phase 0 — Django 5 + Jinja2 + Tailwind + HTMX + Alpine.js setup
+[DONE] Phase 0 — All apps created: tools, blog, states, gst, newsletter, control, users, pages
+[DONE] Phase 0 — Base template (base.jinja), design system, dark mode, sticky nav
+[DONE] Phase 0 — Tailwind CSS compiled, HTMX + Alpine.js downloaded
+[DONE] Phase 0 — All migrations applied, superuser created (admin/admin123)
+[DONE] Phase 0 — Tax data engine: FY 2025-26 + FY 2024-25 data files
+[DONE] Phase 0 — services.py: compare_regimes, new/old regime, HRA, advance tax, GST, capital gains, 80C, 44ADA
+[DONE] Phase 0 — All calculations verified against CBDT examples (100% correct)
+[DONE] Phase 1 — 8 tools seeded: Old vs New Regime, Income Tax, HRA, Advance Tax, 80C, GST, Capital Gains, 44ADA
+[DONE] Phase 1 — 7 remaining tools built: CTC to Take-Home, 80D, TDS on Salary, Refund Estimator, Home Loan, NPS, ITR Form Selector (15 tools total)
+[DONE] Phase 1 — Tool detail page with HTMX real-time calc, regime toggle, FY toggle, CA lead modal
+[DONE] Phase 1 — Tool input templates for all 8 tools
+[DONE] Phase 1 — _tool_result.jinja: regime comparison, income tax, HRA, advance tax, GST, LTCG/STCG
+[DONE] Phase 1 — Homepage: hero, situation cards, tools grid, deadline countdown, newsletter signup
+[DONE] Phase 1 — Blog system: Article, Author, Category models + list/detail views
+[DONE] Phase 1 — Tools index, Blog index, State pages, GST index
+[DONE] Phase 1 — Mission Control (/admin/): dashboard, users, CA leads (Jinja2 + HTMX)
+[DONE] Phase 1 — All static pages: about, contact, disclaimer, privacy, 404, 500
+[DONE] Phase 1 — Newsletter subscribe + CA Lead gen HTMX endpoints
+[DONE] Phase 1 — Admin panel (/sd/) with Tool, Article, Author, Category, CALead, Subscriber
+[DONE] Phase 1 — Site running at http://127.0.0.1:8001/ — all 15 key URLs return 200
+[DONE] Phase 1 — 15 blog articles seeded via seed_blog management command (A01–A15, 1 CA author, 5 categories)
+[DONE] Phase 1 — sitemap.xml live at /sitemap.xml (tools + articles + static pages) | robots.txt at /robots.txt
+[DONE] Phase 2 — 20 tools built: T16(80G) T17(80TTA/TTB) T18(44AD) T19(Freelancer) T21(Property CG) T22(MF Tax) T23(ELSS/PPF/NPS) T24(EPF) T25(PPF) T27(Gratuity) T28(Senior) T29(Surcharge) T31(Composition) T32(GSTR Late Fee) T35(80E) + 5 advisory tools — 35 total
+[DONE] Phase 2 — 29 state pages seeded (seed_states). All returning 200. PT slabs, GST codes, embedded income tax calc.
+[DONE] Pre-Phase3 Bug Fix — Deep audit completed. 85 tests written, all passing. Bugs fixed:
+  1. CRITICAL: Surcharge slabs were 10x wrong (₹5Cr instead of ₹50L) — fixed in fy_2025_26.py + fy_2024_25.py
+  2. CRITICAL: _tool_result.jinja template logic — winner/total_tax/quarterly_tax checks too broad, caught wrong tool results
+  3. CRITICAL: Missing _tool_rating.jinja partial — ToolRateView would 500 on every rating click
+  4. CRITICAL: url('sd:index') in control templates — wrong namespace, fixed to url('admin:index')
+  5. fy_2024_25.py was missing SURCHARGE_SLABS, SECTION_80D, 80TTB, 80TTA, ADVANCE_TAX_SCHEDULE etc.
+  6. Added calc functions for 3 tools: professional-tax-calculator, nps-vs-epf-comparison, tax-saving-checklist
+  7. Added 44ADA result block in _tool_result.jinja (was falling through to wrong template)
+  8. testserver added to ALLOWED_HOSTS for test suite
+  9. All 35 tools 200, all 33 calc endpoints return valid HTML results
+[DONE] Phase 3 — COMPLETE
+[DONE] Phase 3 — Geo market system: GeoMiddleware (CF-IPCountry + session override), request.market on all requests
+[DONE] Phase 3 — Tool model: market field added (india/us/global), migration applied
+[DONE] Phase 3 — US homepage at /us/ with coming-soon tools preview + subscribe CTA
+[DONE] Phase 3 — /set-market/ session switcher, market flag in nav (🇮🇳/🇺🇸)
+[DONE] Phase 3 — Market-aware nav, ToolIndexView filters by market
+[DONE] Phase 3 — tools/affiliates.py: India (ClearTax, Tax2Win, PolicyBazaar, Zerodha, Groww NPS) + US (TurboTax, H&R Block, FreeTaxUSA, Keeper) configs
+[DONE] Phase 3 — affiliate_cta.jinja component wired into _tool_result.jinja (shows after every calc)
+[DONE] Phase 3 — adsense.jinja component (ADSENSE_ENABLED env flag, slot_id param)
+[DONE] Phase 3 — USD filter added to Jinja2 (usd, usd_short)
+[DONE] Phase 3 — Django caching (LocMemCache, cache_page 10min on ToolDetailView, ToolIndexView, ArticleListView, ArticleDetailView, vary_on_cookie)
+[DONE] Phase 3 — AdSense: script in base.jinja (ADSENSE_ENABLED flag), slot in tool_detail + article sidebar via adsense.jinja component
+[DONE] Phase 3 — BreadcrumbList JSON-LD schema on tool_detail.jinja + article.jinja
+[DONE] Phase 3 — hreflang en-IN / en-US market-aware links in base.jinja head
+[DONE] Phase 3 — PWA: manifest.json (shortcuts to top tools), sw.js (cache-first static, network-first pages), meta tags in base.jinja
+[DONE] Phase 3 — Budget 2025 page at /budget/2025/ with slab table, key changes, calculator CTAs + in sitemap + nav
+[DONE] Phase 3 — WhatsApp share button in _tool_result.jinja (after every calc result)
+[DONE] Phase 3 — Article sidebar: CA lead inline form + newsletter subscribe + AdSense slot
+[TODO] Phase 3 — ConvertKit email integration (set RESEND_API_KEY + configure email sequences)
+[TODO] Phase 3 — Set ADSENSE_CLIENT_ID + ADSENSE_ENABLED=true in .env when AdSense approved
+[DONE] USA-First — US tax data: federal_2025.py (2025 IRS brackets, LTCG, FICA, SE tax, AMT, CTC all filing statuses)
+[DONE] USA-First — us_services.py: 7 calculation functions (federal, SE, capital gains, refund, quarterly, std vs itemized, paycheck)
+[DONE] USA-First — 8 US tools seeded (market='us'): federal income tax, refund estimator, SE tax, paycheck, capital gains, quarterly, std vs itemized, W-4 guide
+[DONE] USA-First — US tool input templates: 6 tools with IRS-annotated forms, filing status, pre-tax deductions
+[DONE] USA-First — US result blocks in _tool_result.jinja: all 6 calc types, USD formatting, bracket breakdowns
+[DONE] USA-First — HomeView market-aware: US users see US home at root / (no redirect, full US experience)
+[DONE] USA-First — us_home.jinja: featured tools grid + deadline banner + situation cards (W-2/1099/investor/homeowner)
+[DONE] USA-First — tool_detail.jinja market-aware: US badge, no FY toggle, US tax pro CTA
+[DONE] US Blog — market field added to Article model (migration applied)
+[DONE] US Blog — ArticleListView filters by request.market (US users see US articles)
+[DONE] US Blog — 4 US categories: US Income Tax, US Self-Employment, US Investments, US Tax Guides
+[DONE] US Blog — Author: Sarah Mitchell (Enrolled Agent EA)
+[DONE] US Blog — 10 articles seeded: SE Tax, Federal Brackets, Standard Deduction, Quarterly Tax, Capital Gains, 1099 vs W2, 10 Ways to Reduce Tax, FICA Tax, Tax Refund, W-4 Guide
+[DONE] Geo Fix — Default market changed to 'us' (US is primary). India only when CF-IPCountry=IN or /in/ prefix
+[DONE] Geo Fix — /in/ URL prefix forces market='india' in middleware (no session needed)
+[DONE] Structure — India content at /in/, /in/tools/, /in/blog/, /in/gst/, /in/state-tax/
+[DONE] Structure — US content at / (root), /tools/, /blog/ (primary)
+[DONE] Nav — Market-aware nav: India uses /in/* paths, US uses /* paths
+[DONE] Flag — Country switcher always visible (removed hidden sm:flex → flex + border styling)
+[DONE] Hero fix — US home hero uses inline styles (no Tailwind opacity classes), Tailwind rebuilt
+[TODO] Phase 4 — 50 tools, 70 articles, 5L sessions
+[TODO] Phase 5 — Premium tier, CA directory, ₹1L+/mo revenue
+[TODO] Phase 6 (NOW ACTIVE) — US market: more US tools, US blog content, US affiliates live
+
+================================================================================
+TECH STACK (per CLAUDE.md)
+================================================================================
+
+  Backend:       Python 3.12 + Django 5
+  Templates:     Jinja2 (.jinja) — ALL frontend | Django Templates → /sd/ only
+  Interactivity: HTMX (server-driven partials) + Alpine.js (UI toggles only)
+  Styling:       Tailwind CSS v3 (compiled via CLI, purged, < 20KB)
+  DB:            SQLite (dev) → PostgreSQL (prod)
+  Tax Engine:    Python services.py — all tax logic, zero in templates/views
+  Hosting:       Railway.app (Bangalore region) or DigitalOcean Bangalore
+  DNS/CDN:       Cloudflare (Mumbai/Chennai PoP — fast India TTFB)
+  Analytics:     GA4 + custom events
+  Email:         Django email → Resend.com SMTP
+  Search:        HTMX-powered Django ORM search (FTS5 SQLite / tsvector PG)
+  Error:         Sentry (sentry-sdk[django])
+  CI/CD:         GitHub → Railway auto-deploy on push
+
+INR FORMATTING NOTE:
+  Indian number system: ₹1,23,456 (not ₹123,456)
+  Custom Jinja2 filter: {{ amount | inr }} → "₹1,23,456"
+  Python: format with locale or custom function
+
+================================================================================
+PROJECT STRUCTURE (per CLAUDE.md)
+================================================================================
+
+  manage.py
+  durga.py                      ← dev runner + cache clear
+  requirements.txt
+  CLAUDE.md
+  dev_plan.txt
+  dev.txt                       ← this file
+  test_user.txt
+  .env
+
+  core/
+    settings.py
+    urls.py
+    jinja2.py                   ← Jinja2 env: csrf_input, static, url, inr filter
+
+  apps/
+    users/                      ← auth, profile
+    tools/                      ← all tax calculators + HTMX calc endpoints
+      tax_data/
+        india/
+          fy_2025_26.py         ← New + Old regime slabs, cess, surcharge
+          fy_2024_25.py
+          deductions.py         ← 80C, 80D, HRA, NPS limits
+          capital_gains.py      ← STCG/LTCG rates post Budget 2024
+          gst_rates.py          ← HSN/SAC rates, composition rates
+          state_professional_tax.py  ← all 28 states
+      services.py               ← ALL tax calculation logic here
+      models.py                 ← Tool model
+      views.py                  ← CBVs + HTMX calc endpoints
+      urls.py
+      forms.py                  ← per-tool ModelForms/Forms
+      tests.py                  ← unit tests vs CBDT examples
+
+    blog/
+      models.py                 ← Article, Category, Author
+      views.py
+      urls.py
+      services.py
+
+    pages/
+      views.py                  ← Home, About, Contact, static pages
+      urls.py
+
+    states/
+      models.py                 ← State, ProfessionalTax, GSTState
+      views.py
+      urls.py
+
+    gst/
+      models.py                 ← GSTRate, HSNCode
+      views.py
+      urls.py
+      services.py
+
+    control/                    ← Mission Control (/admin/) per CLAUDE.md
+      views.py
+      urls.py
+      services.py
+
+    newsletter/
+      models.py                 ← Subscriber
+      views.py
+      urls.py
+
+  templates/
+    base.jinja                  ← head (meta/OG/schema), sticky nav, footer
+    layouts/
+      full_width.jinja
+      sidebar.jinja             ← blog articles with sticky TOC
+      tool.jinja                ← two-col: tool left, explanation right
+    components/
+      button.jinja
+      card.jinja                ← tool card, article card, state card
+      input.jinja               ← number (₹ prefix), slider, select, toggle
+      regime_toggle.jinja       ← Old/New regime switcher (reused across tools)
+      chart.jinja               ← Chart.js donut + bar
+      badge.jinja
+      alert.jinja
+      breadcrumb.jinja
+      faq_accordion.jinja       ← Alpine x-show toggle
+      newsletter_signup.jinja
+      affiliate_cta.jinja       ← contextual CTA based on tool
+      whatsapp_share.jinja      ← WhatsApp share button (India-critical)
+      ca_lead.jinja             ← "Talk to a CA" CTA
+    partials/                   ← HTMX response fragments (_*.jinja)
+      _tool_result.jinja        ← returned by HTMX POST /tools/<slug>/calc/
+      _search_results.jinja
+      _article_list.jinja
+      _gst_result.jinja
+    pages/
+      home.jinja
+      tools_index.jinja
+      blog_index.jinja
+      gst_index.jinja
+      about.jinja
+      contact.jinja
+      disclaimer.jinja
+      privacy.jinja
+      terms.jinja
+      affiliate_disclosure.jinja
+      404.jinja
+      500.jinja
+    tools/
+      tool_detail.jinja
+    blog/
+      article.jinja
+    states/
+      state_detail.jinja
+    gst/
+      gst_tool_detail.jinja
+    control/                    ← Mission Control templates (per CLAUDE.md)
+      base_control.jinja
+      dashboard.jinja
+      users.jinja
+      partials/
+        _user_row.jinja
+        _stats_card.jinja
+        _activity_feed.jinja
+
+  static/
+    css/output.css              ← Tailwind compiled
+    js/htmx.min.js
+    js/alpine.min.js
+    js/chart.min.js
+    img/logo.svg
+    img/og-default.png
+
+  NOTE: check html/ folder for any existing templates → convert to Jinja2
+
+================================================================================
+WORKFLOW (per CLAUDE.md — follow every time)
+================================================================================
+
+  1. Models → 2. Migrations (show file, wait for confirm — NEVER auto-migrate)
+  3. Forms → 4. Services (all logic here) → 5. Views (thin CBVs)
+  6. URLs (namespaced) → 7. Templates (Jinja2) → 8. HTMX integration
+
+================================================================================
+PHASE 0 — FOUNDATION SETUP
+Timeline: Week 1–2
+Goal: Django running, Jinja2 configured, design system live, Tailwind built.
+================================================================================
+
+WEEK 1: Django Init + Config
+
+  [ ] django-admin startproject core .
+      Create apps: users, pages, tools, blog, states, gst, newsletter, control
+
+  [ ] requirements.txt:
+        Django==5.x
+        python-decouple
+        whitenoise[brotli]
+        sentry-sdk[django]
+        pillow
+        django-htmx
+        psycopg2-binary
+        markdown                ← for blog article body rendering
+
+  [ ] core/settings.py:
+        TEMPLATES: Jinja2 first (templates/), DjangoTemplates second (for /sd/)
+        JINJA2 environment: core/jinja2.py
+        MIDDLEWARE: WhiteNoiseMiddleware, django_htmx.middleware.HtmxMiddleware
+        LANGUAGE_CODE = 'en-in'
+        TIME_ZONE = 'Asia/Kolkata'
+        CURRENCY = 'INR'
+
+  [ ] core/jinja2.py:
+        Custom filters: inr(amount), percentage(val), pluralize
+        Globals: url(), static(), csrf_input, request, now()
+        inr filter: formats ₹1,23,456 (Indian lakh/crore system)
+
+  [ ] .env variables:
+        SECRET_KEY, DEBUG, DATABASE_URL, ALLOWED_HOSTS,
+        SENTRY_DSN, GA_MEASUREMENT_ID, RESEND_API_KEY
+
+  [ ] core/urls.py:
+        path('', include('pages.urls', namespace='pages'))
+        path('tools/', include('tools.urls', namespace='tools'))
+        path('blog/', include('blog.urls', namespace='blog'))
+        path('state-tax/', include('states.urls', namespace='states'))
+        path('gst/', include('gst.urls', namespace='gst'))
+        path('admin/', include('control.urls', namespace='control'))
+        path('sd/', admin.site.urls)
+        path('sitemap.xml', sitemap, ...)
+        path('robots.txt', RobotsTxtView.as_view())
+
+  [ ] GitHub repo → CI/CD Railway Bangalore region
+  [ ] Cloudflare DNS → Railway (proxy enabled for CDN)
+  [ ] Sentry setup
+
+WEEK 2: Design System
+
+  [ ] Tailwind CLI setup:
+        npm init -y && npm install -D tailwindcss
+        tailwind.config.js: content = ["templates/**/*.jinja", "apps/**/*.py"]
+        Input: static/css/input.css → Output: static/css/output.css
+        npm script: "build:css": "tailwindcss -i ... -o ... --watch"
+
+  [ ] Color palette (tailwind.config.js):
+        colors:
+          primary:  { DEFAULT: '#1A3A5C', light: '#2C5F8A' }
+          accent:   { DEFAULT: '#FF6B35', dark: '#E55A24' }  ← saffron
+          success:  '#2ECC71'
+          warn:     '#F39C12'
+          bg:       '#F8F9FA'
+          dark:     '#1A1A2E'
+          whatsapp: '#25D366'
+
+  [ ] base.jinja — full base template:
+        <html lang="en">
+        Head: charset, viewport, title, meta description, canonical,
+              OG tags, Twitter card, JSON-LD block, Tailwind CSS,
+              Google Fonts (Inter + Noto Sans Devanagari for Hindi),
+              GA4 script, hreflang (hi/en)
+        Nav: logo, mega-menu (Tools/Blog/GST/State Tax/Budget 2025/About),
+             mobile hamburger (Alpine x-data), search icon
+        Main: {% block content %}{% endblock %}
+        Footer: links, legal, affiliate disclosure, CA disclaimer
+        Scripts: HTMX, Alpine.js, Chart.js (only if {% block use_charts %}{% endblock %})
+
+  [ ] Components:
+        button.jinja, card.jinja, input.jinja (₹ prefix),
+        regime_toggle.jinja, chart.jinja, badge.jinja,
+        alert.jinja, breadcrumb.jinja, faq_accordion.jinja,
+        newsletter_signup.jinja, affiliate_cta.jinja,
+        whatsapp_share.jinja, ca_lead.jinja
+
+  [ ] 404.jinja, 500.jinja (Jinja2, extend base.jinja)
+  [ ] Dark mode: Alpine.js toggle + localStorage + Tailwind dark: classes
+  [ ] Convert html/ folder templates → Jinja2 (per CLAUDE.md)
+
+DELIVERABLE: Django running, Jinja2 configured, design system built, deployed
+
+================================================================================
+PHASE 1 — MVP LAUNCH (INDIA)
+Timeline: Week 3–8 (6 weeks)
+Goal: 15 tools + 15 articles + homepage + full SEO live. Get indexed fast.
+================================================================================
+
+WEEK 3: Tax Calculation Engine — India
+
+  tools/tax_data/india/fy_2025_26.py:
+
+  ```python
+  # New Regime slabs FY 2025-26
+  NEW_REGIME_SLABS = [
+      (400000, 0.00),
+      (800000, 0.05),
+      (1200000, 0.10),
+      (1600000, 0.15),
+      (2000000, 0.20),
+      (2400000, 0.25),
+      (None, 0.30),
+  ]
+  NEW_REGIME_REBATE_LIMIT = 1200000   # ₹12L — effectively 0 tax
+  NEW_REGIME_REBATE_MAX = 60000
+  NEW_REGIME_STD_DEDUCTION = 75000
+
+  # Old Regime slabs
+  OLD_REGIME_SLABS = {
+      'below_60':  [(250000, 0.00), (500000, 0.05), (1000000, 0.20), (None, 0.30)],
+      '60_to_79':  [(300000, 0.00), (500000, 0.05), (1000000, 0.20), (None, 0.30)],
+      '80_plus':   [(500000, 0.00), (1000000, 0.20), (None, 0.30)],
+  }
+  OLD_REGIME_REBATE_LIMIT = 500000
+  OLD_REGIME_REBATE_MAX = 12500
+  OLD_REGIME_STD_DEDUCTION = 50000
+
+  CESS_RATE = 0.04
+  SURCHARGE = {
+      5000000:   0.10,
+      10000000:  0.15,
+      20000000:  0.25,
+      50000000:  0.37,
+  }
+  ```
+
+  tools/tax_data/india/deductions.py:
+  ```python
+  SECTION_80C_LIMIT = 150000
+  SECTION_80D = {'self_family': 25000, 'parents': 25000, 'senior_parents': 50000}
+  SECTION_80CCD_1B = 50000    # NPS extra
+  SECTION_24B_LIMIT = 200000  # Home loan interest
+  SECTION_80EEA_LIMIT = 150000
+  ```
+
+  tools/services.py — ALL tax logic:
+
+  ```python
+  def apply_slabs(income, slabs):
+      tax = 0; prev = 0
+      for limit, rate in slabs:
+          if limit is None: tax += (income - prev) * rate; break
+          taxable = min(income, limit) - prev
+          if taxable <= 0: break
+          tax += taxable * rate
+          prev = limit
+      return tax
+
+  def apply_cess(tax): return tax * 1.04
+
+  def apply_surcharge(income, tax):
+      # marginal relief logic
+      ...
+
+  def apply_rebate_87a(income, tax, limit, max_rebate):
+      return 0 if income <= limit else tax
+
+  def calculate_new_regime(gross_income, age='below_60'):
+      income = max(0, gross_income - NEW_REGIME_STD_DEDUCTION)
+      tax = apply_slabs(income, NEW_REGIME_SLABS)
+      tax = max(0, tax - apply_rebate_87a(income, tax, NEW_REGIME_REBATE_LIMIT, NEW_REGIME_REBATE_MAX))
+      tax = apply_surcharge(income, tax)
+      return {'tax': apply_cess(tax), 'effective_rate': ..., 'marginal_rate': ...}
+
+  def calculate_old_regime(gross_income, age='below_60', deductions=None):
+      deductions = deductions or {}
+      std_ded = OLD_REGIME_STD_DEDUCTION
+      sec_80c = min(deductions.get('sec_80c', 0), SECTION_80C_LIMIT)
+      sec_80d = min(deductions.get('sec_80d', 0), SECTION_80D['self_family'])
+      hra_exemption = calculate_hra_exemption(**deductions.get('hra', {}))
+      ...
+      income = max(0, gross_income - std_ded - sec_80c - sec_80d - hra_exemption - ...)
+      slabs = OLD_REGIME_SLABS[age]
+      tax = apply_slabs(income, slabs)
+      ...
+
+  def compare_regimes(gross_income, age, deductions):
+      new = calculate_new_regime(gross_income, age)
+      old = calculate_old_regime(gross_income, age, deductions)
+      winner = 'new' if new['tax'] < old['tax'] else 'old'
+      savings = abs(new['tax'] - old['tax'])
+      return {'new': new, 'old': old, 'winner': winner, 'savings': savings}
+
+  def calculate_hra_exemption(basic, hra_received, rent_paid, is_metro):
+      metro_pct = 0.50 if is_metro else 0.40
+      return min(hra_received, basic * metro_pct, rent_paid - 0.10 * basic)
+
+  def calculate_advance_tax(annual_tax_liability):
+      if annual_tax_liability <= 10000: return None
+      return {
+          'jun_15': annual_tax_liability * 0.15,
+          'sep_15': annual_tax_liability * 0.45,
+          'dec_15': annual_tax_liability * 0.75,
+          'mar_15': annual_tax_liability * 1.00,
+      }
+
+  def calculate_ctc_to_takehome(ctc, ...):
+      # basic, HRA, special allowance, PF, professional tax, TDS
+      ...
+
+  def calculate_gst(amount, rate, reverse=False):
+      if reverse:
+          original = amount / (1 + rate/100)
+          return {'original': original, 'gst': amount - original}
+      return {'original': amount, 'gst': amount * rate/100, 'total': amount * (1 + rate/100)}
+
+  def calculate_capital_gains_equity(buy_price, sell_price, units, buy_date, sell_date):
+      # STCG 20% if < 12 months, LTCG 12.5% above ₹1.25L if > 12 months
+      ...
+
+  def calculate_presumptive_44ada(gross_receipts):
+      presumptive_income = gross_receipts * 0.50
+      tax_new = calculate_new_regime(presumptive_income)
+      tax_old = calculate_old_regime(presumptive_income)
+      return {'presumptive_income': presumptive_income, 'new': tax_new, 'old': tax_old}
+  ```
+
+  [ ] Write unit tests (tools/tests.py):
+        Test against CBDT published examples
+        Test: ₹12L income → 0 tax (new regime rebate)
+        Test: HRA metro vs non-metro
+        Test: LTCG ₹1L (no tax) vs ₹2L (₹9,375 tax)
+        Run: python manage.py test tools
+
+WEEK 4: First 15 Tools (Models + Views + HTMX)
+
+  tools/models.py:
+  ```python
+  CATEGORY_CHOICES = [
+      ('regime', 'Regime Comparison'),
+      ('income', 'Income Tax'),
+      ('deductions', 'Deductions & Savings'),
+      ('freelancer', 'Freelancer & Business'),
+      ('gst', 'GST'),
+      ('investment', 'Investments & Capital Gains'),
+      ('retirement', 'Retirement & Savings'),
+      ('utility', 'Utility Tools'),
+  ]
+
+  class Tool(models.Model):
+      slug = models.SlugField(unique=True)
+      name = models.CharField(max_length=200)
+      short_desc = models.CharField(max_length=300)
+      category = models.CharField(max_length=30, choices=CATEGORY_CHOICES)
+      icon = models.CharField(max_length=50)
+      is_featured = models.BooleanField(default=False)
+      sort_order = models.IntegerField(default=0)
+      rating_up = models.IntegerField(default=0)
+      rating_down = models.IntegerField(default=0)
+      meta_title = models.CharField(max_length=70)
+      meta_description = models.CharField(max_length=165)
+      schema_json = models.TextField(blank=True)
+      fy_applicable = models.CharField(max_length=20, default='2025-26')
+      def __str__(self): return self.name
+      class Meta: ordering = ['sort_order']
+  ```
+
+  tools/views.py HTMX pattern:
+  ```python
+  class ToolDetailView(DetailView):
+      model = Tool
+      template_name = 'tools/tool_detail.jinja'
+      def get_context_data(self, **kwargs):
+          ctx = super().get_context_data(**kwargs)
+          ctx['related_tools'] = Tool.objects.filter(
+              category=self.object.category).exclude(pk=self.object.pk)[:4]
+          return ctx
+
+  class ToolCalculateView(View):
+      def post(self, request, slug):
+          # get tool-specific form, run services.py function, return partial
+          form_class = TOOL_FORM_MAP[slug]
+          form = form_class(request.POST)
+          if form.is_valid():
+              result = TOOL_SERVICE_MAP[slug](form.cleaned_data)
+              return render(request, 'partials/_tool_result.jinja',
+                           {'result': result, 'slug': slug})
+          return render(request, 'partials/_tool_result.jinja',
+                       {'errors': form.errors, 'slug': slug})
+  ```
+
+  tool_detail.jinja HTMX form:
+  ```html
+  <form hx-post="{{ url('tools:calculate', slug=tool.slug) }}"
+        hx-target="#result-panel"
+        hx-swap="innerHTML"
+        hx-trigger="change from:input, change from:select"
+        hx-indicator="#calc-spinner">
+    {{ csrf_input }}
+    {# inputs rendered from template #}
+    <div id="calc-spinner" class="htmx-indicator">Calculating...</div>
+  </form>
+  <div id="result-panel">
+    {# initial server-rendered result #}
+  </div>
+  ```
+
+  _tool_result.jinja (HTMX partial):
+  ```html
+  <div class="result-card">
+    {# Chart.js donut: tax vs take-home #}
+    {# "You pay ₹X tax. Take-home: ₹Y. Effective rate: Z%" #}
+    {# Slab breakdown bar chart #}
+    {# "What this means for you" plain English #}
+    {# WhatsApp share button #}
+    {% include 'components/whatsapp_share.jinja' %}
+    {# Affiliate CTA contextual to this tool #}
+    {% include 'components/affiliate_cta.jinja' %}
+    {# CA Lead CTA #}
+    {% include 'components/ca_lead.jinja' %}
+  </div>
+  ```
+
+  MVP Tools to build (seed via management command):
+  [ ] T01 — Old vs New Regime Calculator       /tools/old-vs-new-tax-regime/   ← #1
+  [ ] T02 — Income Tax Calculator FY 2025-26  /tools/income-tax-calculator/
+  [ ] T03 — CTC to Take-Home Calculator        /tools/ctc-to-take-home/
+  [ ] T04 — HRA Exemption Calculator           /tools/hra-exemption-calculator/
+  [ ] T05 — Advance Tax Calculator             /tools/advance-tax-calculator/
+  [ ] T06 — Section 80C Planner               /tools/80c-deduction-calculator/
+  [ ] T07 — Section 80D Calculator            /tools/80d-deduction-calculator/
+  [ ] T08 — TDS on Salary Calculator          /tools/tds-on-salary-calculator/
+  [ ] T09 — GST Calculator                    /gst/gst-calculator/
+  [ ] T10 — Capital Gains Calculator (Equity) /tools/capital-gains-calculator/
+  [ ] T11 — Income Tax Refund Estimator        /tools/income-tax-refund-estimator/
+  [ ] T12 — 44ADA Presumptive Tax Calculator  /tools/presumptive-tax-44ada/
+  [ ] T13 — Home Loan Tax Benefit Calculator  /tools/home-loan-tax-benefit/
+  [ ] T14 — NPS Tax Benefit Calculator        /tools/nps-tax-benefit-calculator/
+  [ ] T15 — ITR Form Selector                 /tools/which-itr-form-to-file/
+
+  Each tool must have:
+  ✓ HTMX real-time calc (hx-trigger="change" — no submit button)
+  ✓ Result: donut chart + plain-English summary (in INR format)
+  ✓ Regime toggle (Old/New) where applicable
+  ✓ FY toggle (FY 2025-26 / FY 2024-25)
+  ✓ Assumption panel: "Based on FY 2025-26 | 4% cess | New Regime default"
+  ✓ WhatsApp share button on results
+  ✓ Share URL (inputs in query params)
+  ✓ Related tools + related articles
+  ✓ FAQ accordion (FAQPage schema)
+  ✓ JSON-LD WebApplication schema
+  ✓ Mobile: single column, numeric keypad (inputmode="decimal")
+  ✓ INR formatting throughout (₹1,23,456)
+
+WEEK 5: Blog System
+
+  blog/models.py:
+  ```python
+  class Category(models.Model):
+      name = models.CharField(max_length=100)
+      slug = models.SlugField(unique=True)
+      def __str__(self): return self.name
+
+  class Author(models.Model):
+      name = models.CharField(max_length=100)
+      title = models.CharField(max_length=200)  # "Chartered Accountant (CA)"
+      bio = models.TextField()
+      photo = models.ImageField(upload_to='authors/')
+      is_ca = models.BooleanField(default=False)
+      def __str__(self): return self.name
+
+  class Article(models.Model):
+      title = models.CharField(max_length=200)
+      slug = models.SlugField(unique=True)
+      author = models.ForeignKey(Author, on_delete=models.SET_NULL, null=True)
+      reviewer = models.ForeignKey(Author, related_name='reviewed',
+                                   on_delete=models.SET_NULL, null=True)
+      category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
+      body = models.TextField()               # Markdown → rendered with markdown lib
+      excerpt = models.TextField(max_length=300)
+      featured_image = models.ImageField(upload_to='articles/')
+      fy_applicable = models.CharField(max_length=20, default='2025-26')
+      is_hindi = models.BooleanField(default=False)
+      hindi_slug = models.SlugField(blank=True)
+      is_featured = models.BooleanField(default=False)
+      is_published = models.BooleanField(default=False)
+      published_at = models.DateTimeField(null=True)
+      updated_at = models.DateTimeField(auto_now=True)
+      meta_title = models.CharField(max_length=70)
+      meta_description = models.CharField(max_length=165)
+      schema_json = models.TextField(blank=True)
+      related_tools = models.ManyToManyField('tools.Tool', blank=True)
+      reading_time = models.IntegerField(default=5)
+      helpful_yes = models.IntegerField(default=0)
+      helpful_no = models.IntegerField(default=0)
+      def __str__(self): return self.title
+      class Meta: ordering = ['-published_at']
+  ```
+
+  First 15 articles (enter via /sd/ Django admin):
+  [A01] "Old vs New Tax Regime: Which Is Better for You in FY 2025-26?" (T→T01)
+  [A02] "Income Tax Slabs FY 2025-26: Complete Guide (Old + New Regime)"
+  [A03] "HRA Exemption Calculation: Formula, Example, Calculator"
+  [A04] "Section 80C Deductions: Complete List and Limits for FY 2025-26"
+  [A05] "Advance Tax: Who Should Pay, Due Dates, How to Calculate"
+  [A06] "CTC vs Take-Home Salary: What's the Difference?"
+  [A07] "Capital Gains Tax on Mutual Funds After Budget 2024"
+  [A08] "GST for Freelancers: When You Must Register, What to File"
+  [A09] "Income Tax for Salaried Employees: Complete Guide FY 2025-26"
+  [A10] "44ADA Presumptive Taxation for Professionals: Is It Right for You?"
+  [A11] "Section 80D: How Much Tax Can You Save on Health Insurance?"
+  [A12] "Home Loan Tax Benefit: Section 24, 80C, 80EEA Explained"
+  [A13] "NPS Tax Benefits: All Sections Explained (80CCD1, 80CCD1B, 80CCD2)"
+  [A14] "Which ITR Form Should You File? Complete Guide"
+  [A15] "How to Save Tax on Salary Above ₹10 Lakhs in India"
+
+WEEK 6: Homepage + Static Pages
+
+  pages/views.py:
+  ```python
+  class HomeView(TemplateView):
+      template_name = 'pages/home.jinja'
+      def get_context_data(self, **kwargs):
+          return {**super().get_context_data(**kwargs),
+                  'featured_tools': Tool.objects.filter(is_featured=True)[:6],
+                  'latest_articles': Article.objects.filter(
+                      is_published=True).select_related('author')[:3],
+                  'next_deadline': get_next_tax_deadline(),
+                  'current_fy': '2025-26',
+                  'current_ay': '2026-27'}
+  ```
+
+  home.jinja sections:
+  ✓ Hero: "Find out which tax regime saves you more money" + search bar
+  ✓ Regime comparison CTA banner: "Old vs New Regime Calculator →" (priority)
+  ✓ Situation cards: Salaried / Freelancer / Business / Investor / Senior
+  ✓ Tax Deadline countdown: "X days to [next deadline]"
+  ✓ Budget 2025 banner (visible Feb–Apr)
+  ✓ Popular Tools grid (6 tools, 3-col → 2-col → 1-col)
+  ✓ Latest Articles (3-col → 1-col)
+  ✓ Trust bar: "40+ tools | 10L+ calculations | Updated FY 2025-26"
+  ✓ Newsletter signup strip
+  ✓ Footer
+
+  Static pages:
+  [ ] /about/                 → team, CAs on panel, mission, E-E-A-T
+  [ ] /contact/               → form → Resend.com email
+  [ ] /disclaimer/            → "Not CA advice, estimates only"
+  [ ] /privacy/               → DPDP Act 2023 + GDPR compliant
+  [ ] /terms/
+  [ ] /affiliate-disclosure/
+
+WEEK 7: GST Section
+
+  [ ] gst/ app with GST Calculator as primary tool
+  [ ] /gst/ landing page: GST tools hub
+  [ ] /gst/gst-calculator/         ← T09 (highest GST search volume)
+  [ ] /gst/gst-registration-check/ ← T23
+  [ ] /gst/composition-scheme/     ← T24
+  [ ] GST blog articles:
+        "GST rates: complete list by category 2025"
+        "How to register for GST: step-by-step"
+        "GST for freelancers: everything you need to know"
+
+WEEK 8: SEO Foundation + Launch
+
+  [ ] Sitemaps:
+        ToolSitemap, ArticleSitemap, StateSitemap, GSTSitemap
+        Submit to Google Search Console, Bing Webmaster Tools
+
+  [ ] Robots.txt: Allow /, Disallow /sd/ /admin/ /api/
+
+  [ ] Meta tags in base.jinja:
+        <title>{{ meta_title }} | TaxSaver India</title>
+        <meta name="description" content="{{ meta_description }}">
+        <link rel="canonical" href="{{ canonical_url }}">
+        <meta property="og:title" content="{{ og_title }}">
+        <meta property="og:description" content="{{ og_description }}">
+        <meta property="og:image" content="{{ og_image }}">
+        <!-- WhatsApp uses og:image — must be 1200×630 -->
+        <meta name="twitter:card" content="summary_large_image">
+
+  [ ] JSON-LD blocks:
+        Organization schema on homepage
+        WebApplication on every tool page
+        Article + FAQPage on every blog article
+        BreadcrumbList on all non-home pages
+
+  [ ] Lighthouse audit: all key pages > 90 mobile
+  [ ] WhatsApp share test: paste URL in WhatsApp → verify preview image
+  [ ] GA4 events: tool_used, regime_winner (new/old), article_read, ca_lead_click
+  [ ] ConvertKit setup → newsletter form → welcome email + checklist PDF
+  [ ] Apply for Google AdSense
+  [ ] LAUNCH: r/IndiaTax, r/IndiaInvestments, r/IndiaFinance, LinkedIn
+
+DELIVERABLE: 15 tools, 15 articles, 3 GST tools, full site live, indexed
+
+================================================================================
+PHASE 2 — CONTENT & TOOLS EXPANSION
+Timeline: Week 9–16 (8 weeks)
+Goal: 35 tools, 40 articles, 28-state pages, GST depth, first rankings.
+================================================================================
+
+WEEK 9–11: Next 20 Tools
+
+  [ ] T16 — Section 80G Charitable Donation Calc
+  [ ] T17 — 80TTA / 80TTB Savings Interest Deduction
+  [ ] T18 — 44AD Presumptive Tax (Business)
+  [ ] T19 — Freelancer Tax Planner (income → ITR form, advance tax, deductions)
+  [ ] T20 — Professional Tax Calculator (28 states)
+  [ ] T21 — Capital Gains — Real Estate / Property
+  [ ] T22 — Mutual Fund Tax Calculator (post Budget 2024)
+  [ ] T23 — ELSS vs PPF vs NPS Comparison
+  [ ] T24 — EPF Maturity & Tax Calculator
+  [ ] T25 — PPF Maturity Calculator
+  [ ] T26 — NPS vs EPF Comparison
+  [ ] T27 — Gratuity Calculator
+  [ ] T28 — Senior Citizen Tax Calculator
+  [ ] T29 — Surcharge Calculator (income > ₹50L)
+  [ ] T30 — Income Tax Refund Status Checker (guide + link to portal)
+  [ ] T31 — GST Composition Scheme Calculator
+  [ ] T32 — GSTR Late Fee Calculator
+  [ ] T33 — Tax Saving Investment Checklist Generator
+  [ ] T34 — Tax Deadline Calendar FY 2025-26 (interactive)
+  [ ] T35 — 80E Education Loan Tax Benefit
+
+WEEK 12–13: Programmatic State Pages (28 states + 8 UTs)
+
+  states/models.py:
+  ```python
+  class State(models.Model):
+      name = models.CharField(max_length=100)
+      slug = models.SlugField(unique=True)
+      abbr = models.CharField(max_length=3)
+      has_professional_tax = models.BooleanField()
+      prof_tax_slabs_json = models.TextField()
+      gst_notes = models.TextField(blank=True)
+      meta_title = models.CharField(max_length=70)
+      meta_description = models.CharField(max_length=165)
+  ```
+
+  State page template content:
+    H1: "[State] Income Tax Calculator & Professional Tax 2025-26"
+    Embedded income tax calculator (federal — same for all states)
+    Professional tax slabs table for that state
+    State-specific tax notes (Maharashtra, Karnataka have higher prof tax)
+    GST state code for that state
+    FAQs (4–6 per state)
+    Links to related articles
+
+  Seed: python manage.py seed_states
+  Keyword: "income tax calculator Maharashtra" = 15,000/mo
+            28 states × avg 2,000/mo = 56,000 potential searches
+
+WEEK 14–15: 25 More Blog Articles
+
+  [A16] "FY vs AY: What's the Difference? (FY 2025-26 = AY 2026-27)"
+  [A17] "Section 80C: 15 Investment Options Ranked Best to Worst"
+  [A18] "ELSS vs PPF: Which Tax Saving Investment Is Better?"
+  [A19] "How to Calculate HRA Exemption: Step-by-Step with Example"
+  [A20] "Income Tax for Freelancers in India: Complete Guide 2025-26"
+  [A21] "Capital Gains Tax on Stocks: STCG vs LTCG After Budget 2024"
+  [A22] "GST Registration: Who Must Register, Who Should, How to Register"
+  [A23] "NPS Tax Benefits: How to Save ₹50,000 Extra Under 80CCD(1B)"
+  [A24] "How to File ITR Online: Step-by-Step for Salaried Employees"
+  [A25] "Income Tax Notices: Types, Reasons, How to Respond"
+  [A26] "Form 26AS vs AIS: What to Check Before Filing ITR"
+  [A27] "Professional Tax in India: State-Wise Rates and Exemptions"
+  [A28] "How to Save Tax If Your Income Is Above ₹15 Lakhs"
+  [A29] "Presumptive Tax for Doctors and CAs: 44ADA Explained"
+  [A30] "Last Minute Tax Saving: What to Do Before March 31"
+  [A31] "Income Tax for Senior Citizens: Higher Exemption, 80TTB, 80D"
+  [A32] "LTCG on Real Estate: New Rules After Budget 2024"
+  [A33] "Advance Tax Due Dates FY 2025-26: How to Calculate and Pay"
+  [A34] "Home Loan Tax Benefit: How to Claim Section 24 and 80C"
+  [A35] "GST for Small Business: Registration, Filing, Rates Explained"
+  [A36] "EPF Withdrawal: Tax Rules, TDS, Form 15G/H"
+  [A37] "Income Tax on Rental Income: What Landlords Need to Know"
+  [A38] "Tax Planning for Salaried Employees: 10 Ways to Save Tax"
+  [A39] "ESOP Tax: How Stock Options Are Taxed in India"
+  [A40] "Income Tax on Dividends: Rules After 2020"
+
+WEEK 16: Analytics + Conversion Review
+
+  [ ] GA4 review: which tools most used, drop-off in tool flows
+  [ ] Microsoft Clarity heatmaps: homepage + Old vs New Regime tool
+  [ ] WhatsApp share tracking: click events on share buttons
+  [ ] "Was this helpful?" data → improve low-rated articles
+  [ ] CA lead gen test: first "Talk to a CA" CTA A/B test
+  [ ] AdSense approval check
+
+DELIVERABLE: 35 tools, 40 articles, 28 state pages, keyword rankings starting
+
+================================================================================
+PHASE 3 — SEO ACCELERATION & MONETIZATION
+Timeline: Week 17–24 (8 weeks)
+Goal: 1,00,000 monthly sessions. AdSense + affiliates + CA leads flowing.
+================================================================================
+
+WEEK 17–18: Advanced SEO
+
+  [ ] Site search (HTMX):
+        <input hx-get="/search/" hx-target="#search-results"
+               hx-trigger="keyup changed delay:300ms" name="q">
+        Django: tools + articles filtered by query term
+        Keyboard: search icon click → Alpine modal
+
+  [ ] Featured snippet targeting:
+        GSC: rank 4–10 pages → add definition blocks, numbered steps, tables
+        Target: "old vs new regime" position 0 snippet
+
+  [ ] Schema audit: Google Rich Results Test all tools + articles
+  [ ] Django cache: cache_page(60 * 10) on anonymous tool detail views
+  [ ] Budget 2025 page: /budget/2025/ → update within hours on Feb 1
+        Schema: NewsArticle, speakable → Google News pickup
+
+WEEK 19–20: Link Building (India)
+
+  [ ] HARO India / Qwoted: answer journalist tax questions
+  [ ] Guest articles: Economic Times / Mint / MoneyControl (high DA)
+  [ ] CA associations: ICAI student groups → share tools
+  [ ] Reddit India: r/IndiaTax, r/IndiaInvestments (valuable posts, not spam)
+  [ ] Quora: answer "old vs new regime" questions with tool link
+  [ ] Build: /tax-slab-history/ (India tax slabs 2000–2025 — journalist link bait)
+  [ ] Build: /state-tax/compare/ (all states professional tax table)
+  [ ] WhatsApp groups: finance/tax WhatsApp groups sharing calculator results
+
+WEEK 21–22: Monetization Setup
+
+  AdSense (if approved):
+  [ ] Ad slots:
+        Desktop: sidebar 300×250 (below tool explanation, above FAQ)
+        Mobile: sticky bottom banner 320×50 (dismissible)
+        In-article: after 2nd section 728×90 / 320×100
+        Rule: ads NEVER between form inputs and results
+  [ ] Track RPM by page — improve low-RPM pages with better content
+
+  Affiliate System:
+  [ ] affiliates/config.py:
+        'cleartax': {'name': 'ClearTax', 'cta': 'File ITR easily', 'badge': 'Most Popular'}
+        'tax2win': {'name': 'Tax2Win', 'cta': 'CA-assisted ITR filing', 'badge': 'Expert Help'}
+        'zerodha_coin': {'name': 'Zerodha Coin', 'cta': 'Invest in ELSS tax-free'}
+        'policybazaar': {'name': 'PolicyBazaar', 'cta': 'Save tax under 80D'}
+  [ ] affiliate_cta.jinja: show relevant affiliate after tool result
+        After T01 (regime calc): → "File with [ClearTax] this FY"
+        After T10 (80C planner): → "Invest in ELSS with [Zerodha Coin]"
+        After T12 (health): → "Get health insurance via [PolicyBazaar]"
+  [ ] /best-tax-filing-software/ comparison page:
+        ClearTax / Tax2Win / TaxBuddy / myITreturn / CA Wiseman
+  [ ] /invest-to-save-tax/ page:
+        ELSS / PPF / NPS / LIC — investment comparison with affiliate links
+
+  CA Lead Gen:
+  [ ] newsletter/models.py → CALead(name, email, phone, city, query_type, created)
+  [ ] "Talk to a CA" CTA: appears after every tool result
+        Form: name + phone + "What do you need help with?" (dropdown)
+        → saved to CALead model → email alert to CA partners
+  [ ] CA partner onboarding: 5 CAs in 5 cities initially
+        Revenue: ₹500 per qualified lead → 20 leads/day = ₹10,000/day target
+
+  Email:
+  [ ] ConvertKit welcome sequence (3 emails):
+        Day 0: Welcome + "FY 2025-26 Tax Saving Checklist" PDF
+        Day 3: "Old vs New Regime — which is better for YOUR salary?"
+        Day 7: "3 tax-saving moves before March 31"
+  [ ] Weekly newsletter: "Tax Saver Weekly" — Monday 9am IST
+
+WEEK 23–24: Mobile + Performance Polish
+
+  [ ] Mobile audit on real devices (India target: Android mid-range):
+        Test on Redmi Note, Samsung M series (most common India phones)
+        All numeric inputs: inputmode="decimal" → numeric keypad
+        INR formatting: no layout shift on number update
+        WhatsApp share: native share API on mobile (navigator.share)
+        Touch targets: 44px minimum
+
+  [ ] Performance for India mobile networks (4G ~10 Mbps avg):
+        Target LCP < 2s on slow 4G
+        HTMX: 14KB — no framework bundle
+        Tailwind purged: < 20KB
+        WhiteNoise brotli: 60–80% size reduction on static files
+        Cloudflare cache: static assets cached at Mumbai PoP
+
+  [ ] PWA setup:
+        manifest.json: name "Tax Saver India", short_name "TaxSaver"
+        Service worker: cache app shell + static assets
+        "Add to Home Screen" banner (huge in India — low storage devices)
+        Offline fallback: shows cached tool, message "Results may be outdated"
+
+DELIVERABLE: 1L sessions/mo target, AdSense live, CA leads flowing, PWA ready
+
+================================================================================
+PHASE 4 — SCALE & AUTHORITY
+Timeline: Week 25–37 (13 weeks)
+Goal: 5L sessions/mo. 50 tools. Email 5,000+. Ezoic/premium ads.
+================================================================================
+
+WEEK 25–27: Remaining 15 Tools (T36–T50)
+  [ ] T36 — Section 80EEA (Affordable Housing) Calc
+  [ ] T37 — Dividend Income Tax Calculator
+  [ ] T38 — Income Tax on Rental Income
+  [ ] T39 — Tax on EPF Withdrawal Calculator
+  [ ] T40 — Form 15G / 15H Eligibility Checker
+  [ ] T41 — Tax on Salary Arrears (Section 89 Relief)
+  [ ] T42 — Double Taxation (DTAA) Overview Tool
+  [ ] T43 — Income Tax Notice Types Explainer
+  [ ] T44 — Income Tax Penalty & Interest Calculator
+  [ ] T45 — HUF Tax Planning Calculator
+  [ ] T46 — Agricultural Income Tax Tool (exemption checker)
+  [ ] T47 — ESOP / RSU Tax Calculator
+  [ ] T48 — Multi-Year Tax Comparison (FY 2022-23 / 2023-24 / 2024-25 / 2025-26)
+  [ ] T49 — Tax on Crypto Gains (30% flat + 1% TDS)
+  [ ] T50 — Retirement Planning Tax Simulator
+
+WEEK 28–30: City Pages + Programmatic SEO Expansion
+  [ ] Top 30 Indian cities: /state-tax/maharashtra/mumbai/
+  [ ] Hindi versions of top 15 articles: /hi/blog/[slug]/
+      Keyword: "income tax calculator hindi" = 20,000+/mo
+  [ ] Budget year archive: /budget/2024/, /budget/2023/ (historical data)
+  [ ] FY archive: /income-tax-slabs/fy-2024-25/, /fy-2023-24/
+
+WEEK 31–33: Pillar Content + E-E-A-T
+  [ ] 30 more articles (target: 70 total)
+  [ ] Pillar guide hub pages:
+        /guides/salaried-employee-tax-guide/
+        /guides/freelancer-consultant-tax-guide/
+        /guides/tax-saving-investments/
+        /guides/gst-for-small-business/
+        /guides/capital-gains-tax-india/
+  [ ] Annual report: "India Tax Burden Report 2025" (data + charts → press pickup)
+  [ ] Budget 2026 preparation: build /budget/2026/ placeholder in Nov
+
+WEEK 34–36: User Accounts (if demand validated from CA lead data)
+  [ ] users/models.py: Profile (email, phone, city, user_type: salaried/freelancer/business)
+  [ ] Saved calculations: SavedResult model (ephemeral if no account)
+  [ ] CA chat access: premium feature
+  [ ] No Aadhaar/PAN stored ever — privacy-first
+
+WEEK 37: Ezoic Application
+  [ ] Apply for Ezoic (10k sessions threshold — much lower than Mediavine)
+  [ ] Ezoic = smarter ad placement = 2–3× RPM vs basic AdSense
+
+DELIVERABLE: 5L sessions, 50 tools, 70 articles, Ezoic live
+
+================================================================================
+PHASE 5 — PREMIUM & REVENUE SCALE
+Timeline: Week 38–50 (13 weeks)
+Goal: ₹1,00,000+/mo revenue. Premium tier. CA directory.
+================================================================================
+
+WEEK 38–40: Premium Tier
+  [ ] billing/ app: Stripe India (or Razorpay — preferred for India)
+  [ ] Plans: Free / ₹99/mo / ₹499/yr
+  [ ] Premium features:
+        PDF export (WeasyPrint: tax summary PDF)
+        Saved calculations (server-side, per account)
+        No ads
+        CA chat: 1 question/month
+        Advanced multi-year tax planning dashboard
+  [ ] Razorpay integration (UPI, cards, net banking — India payments)
+  [ ] 7-day free trial
+
+WEEK 41–43: CA Directory
+  [ ] /find-a-ca/ directory: CA model (name, city, specialty, ICAI reg no, contact)
+  [ ] CAs pay ₹999–3,999/mo to be listed (Razorpay subscription)
+  [ ] User search: by city + specialty (ITR / GST / business tax)
+  [ ] Revenue target: 50 CAs × ₹1,999/mo = ₹1L/mo
+  [ ] "Verified CA" badge (ICAI registration verified)
+
+WEEK 44–47: Email Scaling + Partnerships
+  [ ] Email to 5,000+ subscribers: segment by type
+  [ ] CA partnership: CAs share tool links to clients (reciprocal marketing)
+  [ ] Zerodha/Groww affiliate deep integration (investment angle)
+  [ ] Budget Day 2026: sponsor a fintech brand's Budget analysis
+
+WEEK 48–50: Revenue Optimization
+  [ ] Ezoic → optimize ad layouts per page type
+  [ ] Affiliate A/B test: CTA copy, button color, placement
+  [ ] Filing season push (Jan–Jul): all CTAs ramped
+  [ ] Razorpay smart collect for CA directory billing
+
+DELIVERABLE: ₹1L/mo revenue, premium live, CA directory, 50 CAs listed
+
+================================================================================
+PHASE 6 — US/GLOBAL EXPANSION
+Timeline: Week 51–65 (Year 2)
+Goal: Add US tax tools. Same Django codebase. 10× revenue potential.
+================================================================================
+
+WEEK 51–54: US Tax Foundation
+  [ ] /us/ route prefix for all US tools
+  [ ] tools/tax_data/us/ folder:
+        federal_brackets_2025.py (IRS data)
+        standard_deduction.py
+        se_tax.py, credits.py
+        state/ca.py, ny.py, tx.py ... (all 50)
+  [ ] US services.py:
+        calculate_us_federal_tax(), calculate_us_se_tax(), calculate_us_hra()
+  [ ] Hreflang: en-US vs en-IN
+  [ ] US affiliate: TurboTax, H&R Block, FreeTaxUSA, Keeper Tax
+  US AdSense RPM: $5–20 (vs India ₹20–80) → 5–10× revenue per visit
+
+WEEK 55–58: US MVP Tools (10 tools)
+  [ ] /us/tools/income-tax-calculator/
+  [ ] /us/tools/self-employment-tax-calculator/
+  [ ] /us/tools/tax-refund-estimator/
+  [ ] /us/tools/capital-gains-tax-calculator/
+  [ ] /us/tools/standard-vs-itemized-deduction/
+  [ ] /us/tools/quarterly-tax-calculator/
+  [ ] /us/tools/child-tax-credit-calculator/
+  [ ] /us/tools/w4-withholding-calculator/
+  [ ] /us/tools/paycheck-calculator/
+  [ ] /us/tools/roth-vs-traditional-ira/
+
+WEEK 59–65: US Blog + SEO
+  [ ] 20 US articles (same structure as India)
+  [ ] US sitemap section
+  [ ] US-specific affiliate CTAs in tool results
+  [ ] /us/ homepage: "US Tax Tools — Free Calculators 2025"
+
+DELIVERABLE: US section live, first US rankings, combined ₹5L+/mo revenue
+
+================================================================================
+ANNUAL MAINTENANCE — INDIA
+================================================================================
+
+ANNUAL (Feb 1 — Budget Day):
+  [ ] Publish "Budget 2026 Income Tax Changes" within 2 hours
+  [ ] Update FY slabs in tax_data/india/fy_2026_27.py
+  [ ] Update standard deductions, 80C limits, surcharge slabs if changed
+  [ ] Add new FY option to all calculators
+  [ ] Update all articles: "FY 2025-26" → "FY 2026-27"
+  [ ] Update state professional tax slabs if changed
+
+QUARTERLY (advance tax dates):
+  [ ] 15 Jun: publish "Q1 Advance Tax Due" reminder + calculator CTA
+  [ ] 15 Sep: Q2 reminder + newsletter
+  [ ] 15 Dec: Q3 reminder + year-end tax saving articles
+  [ ] 15 Mar: Q4 reminder + "Last chance to save tax" content surge
+
+ANNUALLY (Jul–Aug — ITR season):
+  [ ] Publish ITR filing guides: "How to file ITR-1/2/3/4 for AY 2026-27"
+  [ ] Link all tools to ITR filing affiliate CTAs (peak conversion)
+  [ ] Update ITR Form Selector for new AY
+
+MONTHLY:
+  [ ] GSC: top queries, impressions, CTR, new ranking opportunities
+  [ ] GA4: tool usage, session duration, WhatsApp share events
+  [ ] Publish 4–8 articles minimum (crawl budget consistency)
+  [ ] 2–5 backlinks (HARO, CA associations, guest posts)
+
+================================================================================
+MISSION CONTROL (per CLAUDE.md)
+================================================================================
+
+  URL: /admin/ — Jinja2 + HTMX, NOT Django's default admin
+  Django default admin: /sd/
+  All views: @staff_member_required
+
+  Build order (per CLAUDE.md):
+  1. Dashboard: users, CA leads today, revenue, tool usage counts
+  2. User Manager: list, HTMX live search, ban/unban
+  3. CA Lead Manager: leads list, status (new/contacted/converted), export
+  4. Activity Feed: hx-trigger="every 30s"
+  5. Stats Cards: hx-trigger="every 30s" — tool usage, new signups, leads
+
+  India-specific control features:
+  - CA Lead Dashboard: today's leads, response rate, conversion
+  - Budget Day Mode: one-click enable "Budget Banner" across site
+  - FY Switch: change active FY displayed across all tools (one setting)
+
+================================================================================
+CRITICAL LAUNCH CHECKLIST
+================================================================================
+
+  SEO:
+  ✓ Unique meta title (50–60 chars) on every page
+  ✓ Unique meta description (140–165 chars) on every page
+  ✓ OG tags (og:image 1200×630 — WhatsApp-optimized)
+  ✓ Canonical on every page
+  ✓ Sitemap submitted to GSC + Bing
+  ✓ Robots.txt: /sd/ + /admin/ blocked
+  ✓ JSON-LD schema on every tool + article
+  ✓ hreflang en-IN for English, hi for Hindi pages
+
+  PERFORMANCE (India mobile benchmark):
+  ✓ Lighthouse 90+ mobile
+  ✓ LCP < 2s on slow 4G
+  ✓ CLS < 0.1 — no layout shift during HTMX swaps
+  ✓ Total JS: < 50KB (HTMX 14KB + Alpine 15KB + Chart 40KB lazy)
+  ✓ WhiteNoise brotli compression on all static files
+  ✓ Cloudflare cache at Mumbai PoP
+
+  INDIA-SPECIFIC:
+  ✓ INR formatting: ₹1,23,456 (not ₹123,456)
+  ✓ WhatsApp share button on all tool results
+  ✓ inputmode="decimal" on all numeric inputs
+  ✓ Time zone: Asia/Kolkata in all date displays
+  ✓ FY format: "FY 2025-26" (not calendar year)
+  ✓ Disclaimer: "Not CA advice. Consult a CA for tax planning."
+
+  SECURITY (per CLAUDE.md):
+  ✓ {{ csrf_input }} in all HTMX POST forms (NOT {% csrf_token %})
+  ✓ Autoescape enabled in Jinja2
+  ✓ Django ORM only — no raw SQL
+  ✓ No Aadhaar/PAN data stored anywhere
+
+  LEGAL:
+  ✓ Disclaimer on every tool result
+  ✓ Privacy policy (DPDP Act 2023 compliant)
+  ✓ Terms live
+  ✓ Affiliate disclosure live
+  ✓ "Based on Income Tax Act as on [date]" note on all tools
+
+================================================================================
+TIMELINE SUMMARY
+================================================================================
+
+Phase 0   Week 1–2    Django, Jinja2, Tailwind, design system
+Phase 1   Week 3–8    15 tools, 15 articles, GST section, homepage, launch
+Phase 2   Week 9–16   35 tools, 40 articles, 28 state pages
+Phase 3   Week 17–24  SEO scale, AdSense, affiliate, CA lead gen, PWA
+Phase 4   Week 25–37  50 tools, 70 articles, 5L sessions, Ezoic
+Phase 5   Week 38–50  Premium (Razorpay), CA directory, ₹1L/mo revenue
+Phase 6   Week 51–65  US/Global expansion — 5–10× revenue per session
+
+================================================================================
+BUDGET (Year 1 — India)
+================================================================================
+
+  Domain (taxessaver.com):             ₹800–1,200/yr
+  Railway Bangalore (Django hosting):  ₹400–1,600/mo
+  PostgreSQL (Railway managed):        ₹400–800/mo
+  Cloudflare (free tier):              ₹0
+  Sentry (free):                       ₹0
+  ConvertKit (free to 1k subs):        ₹0 → ₹2,400/mo
+  Razorpay (2% transaction fee):       % of revenue
+  Tailwind CLI (open source):          ₹0
+  Canva Pro (graphics):                ₹1,000/mo
+  ──────────────────────────────────────────────────
+  Total Year 1:                        ₹5,000–20,000
+
+  AdSense revenue: Month 3–4 (small)
+  CA lead gen: Month 4–5 (₹20,000–50,000/mo)
+  Affiliate: Month 5–6 (₹10,000–30,000/mo)
+  Self-sustaining: Month 7–8
+  ₹1L/mo target: Month 15–18
+
+================================================================================
+END OF DEVELOPMENT ROADMAP (INDIA)
+================================================================================

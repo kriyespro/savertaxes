@@ -1,0 +1,28 @@
+{# T35 — 80E Education Loan #}
+<div class="space-y-5">
+  <div class="p-3 bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-800 rounded-xl text-xs text-blue-700 dark:text-blue-400">
+    Section 80E: No upper limit on deduction. Available for 8 years from first EMI year. Only interest (not principal) is deductible. Old Regime only.
+  </div>
+  <div>
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Annual Interest Paid on Education Loan</label>
+    <div class="relative"><span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium">₹</span>
+      <input type="number" name="annual_interest" placeholder="e.g. 120000" min="0" inputmode="numeric" class="w-full pl-8 pr-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary text-sm">
+    </div>
+    <p class="text-xs text-gray-400 mt-1">From bank statement or loan certificate</p>
+  </div>
+  <div>
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Current Repayment Year</label>
+    <select name="loan_year" class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary text-sm">
+      {% for yr in range(1, 10) %}
+      <option value="{{ yr }}">Year {{ yr }}{% if yr > 8 %} (not eligible){% endif %}</option>
+      {% endfor %}
+    </select>
+    <p class="text-xs text-gray-400 mt-1">Count from year 1 = first EMI year</p>
+  </div>
+  <div>
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Your Tax Bracket</label>
+    <select name="marginal_rate" class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary text-sm">
+      <option value="30">30% slab</option><option value="20">20% slab</option><option value="5">5% slab</option>
+    </select>
+  </div>
+</div>

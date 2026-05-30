@@ -1,0 +1,61 @@
+<div class="space-y-4">
+  <div>
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Filing Status</label>
+    <select name="filing_status" class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary text-sm">
+      <option value="single">Single ($15,000 standard)</option>
+      <option value="married_jointly">Married Filing Jointly ($30,000 standard)</option>
+      <option value="married_separately">Married Filing Separately ($15,000 standard)</option>
+      <option value="head_of_household">Head of Household ($22,500 standard)</option>
+    </select>
+  </div>
+
+  <div>
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Gross Income <span class="text-xs text-gray-400">(for medical deduction threshold)</span></label>
+    <div class="relative">
+      <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-semibold">$</span>
+      <input type="number" name="gross_income" min="0" step="1000" value="80000" inputmode="numeric"
+             class="w-full pl-7 pr-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary text-sm">
+    </div>
+  </div>
+
+  <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mt-2">Your Itemized Deductions</p>
+
+  <div>
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Mortgage Interest</label>
+    <div class="relative">
+      <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-semibold">$</span>
+      <input type="number" name="mortgage_interest" min="0" step="500" value="0" inputmode="numeric"
+             class="w-full pl-7 pr-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary text-sm">
+    </div>
+    <p class="text-xs text-gray-400 mt-1">From Form 1098. Deductible on loans up to $750K.</p>
+  </div>
+
+  <div>
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">State & Local Taxes (SALT)</label>
+    <div class="relative">
+      <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-semibold">$</span>
+      <input type="number" name="state_local_taxes" min="0" step="500" value="0" inputmode="numeric"
+             class="w-full pl-7 pr-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary text-sm">
+    </div>
+    <p class="text-xs text-amber-600 dark:text-amber-400 mt-1">Capped at $10,000 (TCJA). Includes state income + property taxes.</p>
+  </div>
+
+  <div>
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Charitable Contributions</label>
+    <div class="relative">
+      <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-semibold">$</span>
+      <input type="number" name="charitable" min="0" step="100" value="0" inputmode="numeric"
+             class="w-full pl-7 pr-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary text-sm">
+    </div>
+  </div>
+
+  <div>
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Medical Expenses (unreimbursed)</label>
+    <div class="relative">
+      <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-semibold">$</span>
+      <input type="number" name="medical" min="0" step="100" value="0" inputmode="numeric"
+             class="w-full pl-7 pr-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary text-sm">
+    </div>
+    <p class="text-xs text-gray-400 mt-1">Only the amount exceeding 7.5% of your AGI is deductible.</p>
+  </div>
+</div>

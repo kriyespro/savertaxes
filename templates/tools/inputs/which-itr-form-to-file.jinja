@@ -1,0 +1,38 @@
+{# T15 — ITR Form Selector #}
+<div class="space-y-5">
+
+  <p class="text-sm text-gray-600 dark:text-gray-400">Answer these questions to find your correct ITR form for AY 2026-27.</p>
+
+  <div>
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Total Annual Income</label>
+    <div class="relative">
+      <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium">₹</span>
+      <input type="number" name="total_income" placeholder="e.g. 1200000" min="0" inputmode="numeric"
+             class="w-full pl-8 pr-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary text-sm">
+    </div>
+  </div>
+
+  <div class="space-y-3">
+    <p class="text-sm font-medium text-gray-700 dark:text-gray-300">Income Sources (check all that apply)</p>
+
+    {% set options = [
+      ('has_salary', 'Salary / Pension income'),
+      ('has_capital_gains', 'Capital gains (stocks, mutual funds, property)'),
+      ('has_business_income', 'Business income (actual books of accounts)'),
+      ('has_presumptive', 'Freelancer / consultant income (44ADA) or business under 44AD'),
+      ('has_fno', 'F&O / futures & options trading'),
+      ('has_multiple_houses', 'More than one house property'),
+      ('has_foreign_assets', 'Foreign assets or foreign income'),
+      ('is_director', 'Director in a company (without business income)'),
+    ] %}
+
+    {% for field, label in options %}
+    <label class="flex items-start gap-3 p-3 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-primary cursor-pointer transition-colors">
+      <input type="checkbox" name="{{ field }}" value="true"
+             class="mt-0.5 rounded border-gray-300 text-primary focus:ring-primary"
+             onchange="htmx.trigger('#tool-form', 'change')">
+      <span class="text-sm text-gray-700 dark:text-gray-300">{{ label }}</span>
+    </label>
+    {% endfor %}
+  </div>
+</div>

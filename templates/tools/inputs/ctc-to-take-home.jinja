@@ -1,0 +1,69 @@
+{# T03 — CTC to Take-Home Calculator #}
+<div class="space-y-5">
+
+  <div>
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Annual CTC (Cost to Company)</label>
+    <div class="relative">
+      <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium">₹</span>
+      <input type="number" name="ctc" placeholder="e.g. 1200000" min="0" inputmode="numeric"
+             class="w-full pl-8 pr-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary text-sm">
+    </div>
+    <p class="text-xs text-gray-400 mt-1">Your total CTC as mentioned in your offer letter</p>
+  </div>
+
+  <div class="grid grid-cols-2 gap-4">
+    <div>
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Basic Salary %</label>
+      <select name="basic_pct" class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary text-sm">
+        <option value="40">40% of CTC</option>
+        <option value="45">45% of CTC</option>
+        <option value="50">50% of CTC</option>
+        <option value="35">35% of CTC</option>
+      </select>
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">HRA % of Basic</label>
+      <select name="hra_pct" class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary text-sm">
+        <option value="50">50% (Metro city)</option>
+        <option value="40">40% (Non-metro)</option>
+      </select>
+    </div>
+  </div>
+
+  <div>
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tax Regime</label>
+    <div class="flex rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden text-sm">
+      <label class="flex-1 text-center">
+        <input type="radio" name="regime" value="new" class="sr-only" checked>
+        <span class="block py-2.5 cursor-pointer regime-option bg-primary text-white font-medium">New Regime</span>
+      </label>
+      <label class="flex-1 text-center">
+        <input type="radio" name="regime" value="old" class="sr-only">
+        <span class="block py-2.5 cursor-pointer regime-option text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700">Old Regime</span>
+      </label>
+    </div>
+  </div>
+
+  <div>
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Age Group</label>
+    <select name="age_group" class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary text-sm">
+      <option value="below_60">Below 60 years</option>
+      <option value="60_to_79">60 to 79 years (Senior Citizen)</option>
+      <option value="80_plus">80+ years (Super Senior)</option>
+    </select>
+  </div>
+</div>
+
+<script>
+document.querySelectorAll('input[name="regime"]').forEach(radio => {
+  radio.addEventListener('change', function() {
+    document.querySelectorAll('.regime-option').forEach(el => {
+      el.classList.remove('bg-primary', 'text-white', 'font-medium');
+      el.classList.add('text-gray-600', 'dark:text-gray-400');
+    });
+    this.nextElementSibling.classList.add('bg-primary', 'text-white', 'font-medium');
+    this.nextElementSibling.classList.remove('text-gray-600', 'dark:text-gray-400');
+    htmx.trigger('#tool-form', 'change');
+  });
+});
+</script>

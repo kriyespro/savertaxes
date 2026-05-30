@@ -1,0 +1,29 @@
+{# T17 — 80TTA/80TTB #}
+<div class="space-y-5">
+  <div>
+    <label class="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer mb-4">
+      <input type="checkbox" name="is_senior" value="true" class="rounded border-gray-300 text-primary focus:ring-primary" onchange="htmx.trigger('#tool-form','change')">
+      I am a Senior Citizen (60+) — eligible for 80TTB (₹50,000 limit)
+    </label>
+  </div>
+  <div>
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Savings Account Interest (Annual)</label>
+    <div class="relative"><span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium">₹</span>
+      <input type="number" name="savings_interest" placeholder="e.g. 15000" min="0" inputmode="numeric" class="w-full pl-8 pr-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary text-sm">
+    </div>
+    <p class="text-xs text-gray-400 mt-1">From passbook or Form 26AS</p>
+  </div>
+  <div>
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">FD / RD Interest (Annual)</label>
+    <div class="relative"><span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium">₹</span>
+      <input type="number" name="fd_interest" placeholder="e.g. 50000" min="0" inputmode="numeric" class="w-full pl-8 pr-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary text-sm">
+    </div>
+    <p class="text-xs text-gray-400 mt-1">Eligible for 80TTB only (senior citizens). Not covered under 80TTA.</p>
+  </div>
+  <div>
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Your Tax Bracket</label>
+    <select name="marginal_rate" class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary text-sm">
+      <option value="30">30% slab</option><option value="20">20% slab</option><option value="5">5% slab</option>
+    </select>
+  </div>
+</div>
