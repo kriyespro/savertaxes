@@ -124,9 +124,6 @@ CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.redis.RedisCache',
         'LOCATION': REDIS_URL,
-        'OPTIONS': {
-            'CLIENT_CLASS': 'django.core.cache.backends.redis.RedisCacheClient',
-        },
         'KEY_PREFIX': 'taxessaver',
         'TIMEOUT': 600,
     }
