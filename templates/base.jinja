@@ -16,11 +16,18 @@
   <meta property="og:site_name" content="TaxSaver India">
   <meta name="twitter:card" content="summary_large_image">
 
-  {# Styles #}
-  <link rel="stylesheet" href="{{ static('css/output.css') }}">
+  {# Critical CSS — preload non-blocking, swap to stylesheet onload #}
+  <link rel="preload" href="{{ static('css/output.css') }}" as="style"
+        onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="{{ static('css/output.css') }}"></noscript>
+
+  {# Google Fonts — async, non-blocking (saves ~750ms on critical path) #}
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="preload"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+        as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"></noscript>
 
   {# Schema JSON-LD #}
   <script type="application/ld+json">
@@ -220,8 +227,8 @@
     </div>
   </footer>
 
-  {# HTMX #}
-  <script src="{{ static('js/htmx.min.js') }}"></script>
+  {# HTMX — defer so it does not block paint #}
+  <script defer src="{{ static('js/htmx.min.js') }}"></script>
 
   {# Chart.js — only on pages that need it #}
   {% block extra_scripts %}{% endblock %}
