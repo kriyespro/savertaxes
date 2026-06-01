@@ -82,6 +82,8 @@ PROGRESS TRACKER
 [DONE] Flag — Country switcher always visible (removed hidden sm:flex → flex + border styling)
 [DONE] Hero fix — US home hero uses inline styles (no Tailwind opacity classes), Tailwind rebuilt
 [DONE] Docker deployment — Dockerfile, docker-compose.yml, gunicorn.conf.py, entrypoint.sh, .env.production.example, .dockerignore — ready for live server
+[DONE] Bug fix — _tool_result.jinja: {% if %} → {% elif %} at line 267 — was causing TemplateSyntaxError and breaking ALL calculators
+[DONE] US Blog — 10 extra articles seeded via seed_us_blog_extra.py (W-2/1099, CTC, homeowner deductions, Roth vs Traditional IRA, IRS payment plan, SS tax, tax-loss harvesting, free filing, quarterly taxes, home office) — 20 US articles total
 [TODO] Phase 4 — 50 tools, 70 articles, 5L sessions
 [TODO] Phase 5 — Premium tier, CA directory, ₹1L+/mo revenue
 [TODO] Phase 6 (NOW ACTIVE) — US market: more US tools, US blog content, US affiliates live
