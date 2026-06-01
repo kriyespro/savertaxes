@@ -2,18 +2,41 @@
 
 {% block content %}
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-  <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Tax Guides & Blog</h1>
-  <p class="text-gray-600 dark:text-gray-400 mb-8">Expert guides on income tax saving, GST, ITR filing, and investments for FY {{ CURRENT_FY }}.</p>
+
+  {# Page header — market-aware #}
+  {% set is_us = (request.market == 'us') %}
+  <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+    {% if is_us %}US Tax Guides & Blog{% else %}Tax Guides & Blog{% endif %}
+  </h1>
+  <p class="text-gray-600 dark:text-gray-400 mb-8 text-sm sm:text-base">
+    {% if is_us %}
+      Expert guides on federal income tax, self-employment, capital gains, and IRS filing for Tax Year 2025.
+    {% else %}
+      Expert guides on income tax saving, GST, ITR filing, and investments for FY {{ CURRENT_FY }}.
+    {% endif %}
+  </p>
 
   {# Category pills #}
   <div class="flex flex-wrap gap-2 mb-8">
     <a href="{{ url('blog:index') }}"
-       class="px-4 py-2 rounded-full text-sm font-medium transition-colors {% if not active_category %}bg-primary text-white{% else %}bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200{% endif %}">
+       class="px-4 py-2 rounded-full text-sm font-medium transition-colors
+              {% if not active_category %}
+                bg-primary text-white
+              {% else %}
+                bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400
+                hover:bg-gray-200 dark:hover:bg-gray-700
+              {% endif %}">
       All
     </a>
     {% for cat in categories %}
     <a href="{{ url('blog:category', args=[cat.slug]) }}"
-       class="px-4 py-2 rounded-full text-sm font-medium transition-colors {% if active_category == cat.slug %}bg-primary text-white{% else %}bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200{% endif %}">
+       class="px-4 py-2 rounded-full text-sm font-medium transition-colors
+              {% if active_category == cat.slug %}
+                bg-primary text-white
+              {% else %}
+                bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400
+                hover:bg-gray-200 dark:hover:bg-gray-700
+              {% endif %}">
       {{ cat.name }}
     </a>
     {% endfor %}
@@ -22,26 +45,57 @@
   {# Articles grid #}
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
     {% for article in articles %}
+    {% set us_article = (article.market == 'us') %}
     <a href="{{ article.get_absolute_url() }}"
-       class="group bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-primary hover:shadow-md transition-all overflow-hidden">
-      <div class="p-6">
-        <div class="flex items-center gap-2 mb-3">
+       class="group bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700
+              hover:border-primary dark:hover:border-blue-500 hover:shadow-md transition-all overflow-hidden flex flex-col">
+      <div class="p-5 sm:p-6 flex flex-col flex-1">
+
+        {# Meta row — category + FY/TY badge #}
+        <div class="flex items-center gap-2 mb-3 flex-wrap">
           {% if article.category %}
-          <span class="text-xs font-medium text-primary bg-primary/10 px-2 py-0.5 rounded">{{ article.category.name }}</span>
+          <span class="text-xs font-medium px-2 py-0.5 rounded
+                       {% if us_article %}
+                         text-blue-700 dark:text-blue-300 bg-blue-100 dark:bg-blue-900/40
+                       {% else %}
+                         text-primary dark:text-blue-300 bg-primary/10 dark:bg-blue-900/40
+                       {% endif %}">
+            {{ article.category.name }}
+          </span>
           {% endif %}
-          <span class="text-xs text-gray-400">FY {{ article.fy_applicable }}</span>
+          <span class="text-xs text-gray-400 dark:text-gray-500">
+            {% if us_article %}Tax Year {{ article.fy_applicable }}{% else %}FY {{ article.fy_applicable }}{% endif %}
+          </span>
+          {% if us_article %}
+          <span class="text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 rounded">🇺🇸 US</span>
+          {% endif %}
         </div>
-        <h2 class="font-semibold text-gray-900 dark:text-white text-sm leading-snug mb-2 group-hover:text-primary transition-colors line-clamp-2">{{ article.title }}</h2>
-        <p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-3">{{ article.excerpt }}</p>
-        <div class="mt-4 flex items-center gap-3 text-xs text-gray-400">
-          {% if article.author %}<span>{{ article.author.name }}</span>{% endif %}
-          <span>{{ article.reading_time }} min read</span>
-          {% if article.published_at %}<span>{{ article.published_at.strftime('%d %b %Y') }}</span>{% endif %}
+
+        {# Title — fixed dark hover #}
+        <h2 class="font-semibold text-gray-900 dark:text-white text-sm leading-snug mb-2
+                   group-hover:text-primary dark:group-hover:text-blue-400
+                   transition-colors line-clamp-2 flex-1">
+          {{ article.title }}
+        </h2>
+
+        {# Excerpt #}
+        <p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-3 mb-4">{{ article.excerpt }}</p>
+
+        {# Author + meta — flex-wrap fixes mobile overflow #}
+        <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-400 dark:text-gray-500 mt-auto">
+          {% if article.author %}
+          <span class="truncate max-w-[120px]">{{ article.author.name }}</span>
+          {% endif %}
+          <span>{{ article.reading_time }} min</span>
+          {% if article.published_at %}
+          <span>{{ article.published_at.strftime('%d %b %Y') }}</span>
+          {% endif %}
         </div>
+
       </div>
     </a>
     {% else %}
-    <div class="col-span-3 py-16 text-center">
+    <div class="col-span-full py-16 text-center">
       <p class="text-gray-400">No articles yet. Add via <a href="/sd/" class="text-primary underline">admin panel</a>.</p>
     </div>
     {% endfor %}
@@ -51,13 +105,20 @@
   {% if is_paginated %}
   <div class="flex justify-center gap-2 mt-10">
     {% if page_obj.has_previous() %}
-    <a href="?page={{ page_obj.previous_page_number() }}" class="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm hover:border-primary transition-colors">← Previous</a>
+    <a href="?page={{ page_obj.previous_page_number() }}"
+       class="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700
+              rounded-lg text-sm text-gray-700 dark:text-gray-300
+              hover:border-primary dark:hover:border-blue-500 transition-colors">← Previous</a>
     {% endif %}
-    <span class="px-4 py-2 bg-primary text-white rounded-lg text-sm">{{ page_obj.number }}</span>
+    <span class="px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium">{{ page_obj.number }}</span>
     {% if page_obj.has_next() %}
-    <a href="?page={{ page_obj.next_page_number() }}" class="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm hover:border-primary transition-colors">Next →</a>
+    <a href="?page={{ page_obj.next_page_number() }}"
+       class="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700
+              rounded-lg text-sm text-gray-700 dark:text-gray-300
+              hover:border-primary dark:hover:border-blue-500 transition-colors">Next →</a>
     {% endif %}
   </div>
   {% endif %}
+
 </div>
 {% endblock %}
