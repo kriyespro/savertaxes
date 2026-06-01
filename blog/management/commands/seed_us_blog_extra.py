@@ -1013,17 +1013,26 @@ class Command(BaseCommand):
             )
             self.stdout.write(f'  Created author: {author.name}')
 
-        cat_map = {c.slug: c for c in Category.objects.filter(slug__startswith='us-')}
+        US_CAT_NAMES = {
+            'us-income-tax':      'US Income Tax',
+            'us-self-employment': 'US Self-Employment',
+            'us-investments':     'US Investments',
+            'us-tax-guides':      'US Tax Guides',
+        }
+
+        # Fix / create categories with correct names
+        cat_map = {}
+        for slug, name in US_CAT_NAMES.items():
+            cat, _ = Category.objects.update_or_create(
+                slug=slug,
+                defaults={'name': name, 'description': ''},
+            )
+            cat_map[slug] = cat
+            self.stdout.write(f'  Category: {cat.name}')
 
         for i, art in enumerate(ARTICLES, 1):
             cat_slug = art.pop('category')
             cat = cat_map.get(cat_slug)
-            if not cat:
-                cat, _ = Category.objects.get_or_create(
-                    slug=cat_slug,
-                    defaults={'name': cat_slug.replace('-', ' ').title(), 'description': ''},
-                )
-                cat_map[cat_slug] = cat
 
             obj, created = Article.objects.get_or_create(
                 slug=art['slug'],
