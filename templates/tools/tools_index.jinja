@@ -1,50 +1,88 @@
 {% extends "base.jinja" %}
 
 {% block content %}
+{% set is_us = (request.market == 'us') %}
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-  <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Free Tax Calculators — India</h1>
-  <p class="text-gray-600 dark:text-gray-400 mb-8">50+ free income tax, GST, HRA and capital gains calculators. Updated for FY {{ CURRENT_FY }}.</p>
 
-  {# Category filter tabs #}
+  {# Market-aware heading #}
+  <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+    {% if is_us %}Free US Tax Calculators 2025{% else %}Free Indian Tax Calculators{% endif %}
+  </h1>
+  <p class="text-gray-600 dark:text-gray-400 mb-8 text-sm sm:text-base">
+    {% if is_us %}
+      Free federal income tax, self-employment, capital gains, and IRS calculators for Tax Year 2025.
+    {% else %}
+      50+ free income tax, GST, HRA and capital gains calculators. Updated for FY {{ CURRENT_FY }}.
+    {% endif %}
+  </p>
+
+  {# Category filter tabs — market-aware #}
   <div class="flex flex-wrap gap-2 mb-8">
     <a href="{{ url('tools:index') }}"
-       class="px-4 py-2 rounded-full text-sm font-medium transition-colors {% if active_category == 'all' %}bg-primary text-white{% else %}bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200{% endif %}">
+       class="px-4 py-2 rounded-full text-sm font-medium transition-colors
+              {% if active_category == 'all' %}bg-primary text-white{% else %}bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700{% endif %}">
       All Tools
     </a>
-    {% for cat in [('regime', 'Regime Comparison'), ('income', 'Income Tax'), ('deductions', 'Deductions'), ('freelancer', 'Freelancer'), ('gst', 'GST'), ('investment', 'Investments'), ('retirement', 'Retirement')] %}
-    <a href="{{ url('tools:index') }}?category={{ cat[0] }}"
-       class="px-4 py-2 rounded-full text-sm font-medium transition-colors {% if active_category == cat[0] %}bg-primary text-white{% else %}bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200{% endif %}">
-      {{ cat[1] }}
-    </a>
-    {% endfor %}
+    {% if is_us %}
+      {% for cat_key, cat_label in [('us_income','Income Tax'), ('us_self_employment','Self-Employment'), ('us_investment','Investments'), ('us_deductions','Deductions')] %}
+      <a href="{{ url('tools:index') }}?category={{ cat_key }}"
+         class="px-4 py-2 rounded-full text-sm font-medium transition-colors
+                {% if active_category == cat_key %}bg-primary text-white{% else %}bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700{% endif %}">
+        {{ cat_label }}
+      </a>
+      {% endfor %}
+    {% else %}
+      {% for cat_key, cat_label in [('regime','Regime Comparison'), ('income','Income Tax'), ('deductions','Deductions'), ('freelancer','Freelancer'), ('gst','GST'), ('investment','Investments'), ('retirement','Retirement')] %}
+      <a href="{{ url('tools:index') }}?category={{ cat_key }}"
+         class="px-4 py-2 rounded-full text-sm font-medium transition-colors
+                {% if active_category == cat_key %}bg-primary text-white{% else %}bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700{% endif %}">
+        {{ cat_label }}
+      </a>
+      {% endfor %}
+    {% endif %}
   </div>
 
   {# Tools grid #}
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
     {% for tool in tools %}
+    {% set us_tool = (tool.market == 'us') %}
     <a href="{{ tool.get_absolute_url() }}"
-       class="group bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-primary hover:shadow-lg transition-all p-6">
-      <div class="flex items-start justify-between mb-3">
-        <span class="inline-block text-xs font-medium text-primary bg-primary/10 px-2 py-1 rounded">{{ tool.get_category_display() }}</span>
-        <span class="text-xs text-gray-400">FY {{ tool.fy_applicable }}</span>
+       class="group bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700
+              hover:border-primary dark:hover:border-blue-500 hover:shadow-lg transition-all p-5 sm:p-6 flex flex-col">
+      <div class="flex items-start justify-between mb-3 gap-2">
+        <span class="inline-block text-xs font-medium px-2 py-1 rounded
+                     {% if us_tool %}text-blue-700 dark:text-blue-300 bg-blue-100 dark:bg-blue-900/40{% else %}text-primary dark:text-blue-300 bg-primary/10 dark:bg-blue-900/40{% endif %}">
+          {{ tool.get_category_display() }}
+        </span>
+        <span class="text-xs text-gray-400 dark:text-gray-500 whitespace-nowrap shrink-0">
+          {% if us_tool %}{{ tool.fy_applicable }}{% else %}FY {{ tool.fy_applicable }}{% endif %}
+        </span>
       </div>
-      <h2 class="font-semibold text-gray-900 dark:text-white text-sm leading-snug mb-2 group-hover:text-primary transition-colors">{{ tool.name }}</h2>
-      <p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-2">{{ tool.short_desc }}</p>
-      <div class="mt-4 flex items-center justify-between">
+      <h2 class="font-semibold text-gray-900 dark:text-white text-sm leading-snug mb-2
+                 group-hover:text-primary dark:group-hover:text-blue-400 transition-colors flex-1">
+        {{ tool.name }}
+      </h2>
+      <p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 mb-4">{{ tool.short_desc }}</p>
+      <div class="mt-auto flex items-center justify-between">
         {% if tool.rating_total > 0 %}
         <span class="text-xs text-gray-400">👍 {{ tool.rating_pct }}%</span>
         {% else %}
         <span></span>
         {% endif %}
-        <span class="text-xs text-primary font-medium group-hover:underline">Calculate →</span>
+        <span class="text-xs font-medium text-primary dark:text-blue-400 group-hover:underline">Calculate →</span>
       </div>
     </a>
     {% else %}
-    <div class="col-span-3 py-16 text-center">
-      <p class="text-gray-400 text-lg mb-2">No tools yet.</p>
+    <div class="col-span-full py-16 text-center">
+      <p class="text-gray-400 text-lg mb-2">No tools found.</p>
+      {% if is_us %}
+      <p class="text-gray-400 text-sm">Run <code class="bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded">seed_us_tools</code> to add US calculators.</p>
+      {% else %}
       <p class="text-gray-400 text-sm">Add tools via the <a href="/sd/" class="text-primary underline">admin panel</a>.</p>
+      {% endif %}
     </div>
     {% endfor %}
   </div>
+
 </div>
 {% endblock %}
