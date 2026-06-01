@@ -1,0 +1,16 @@
+venv/
+.env
+.env.production
+*.pyc
+__pycache__/
+db.sqlite3
+staticfiles/
+.git/
+.gitignore
+node_modules/
+.DS_Store
+*.md
+plans/
+*.egg-info/
+data/
+media/

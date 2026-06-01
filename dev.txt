@@ -1,7 +1,7 @@
 ================================================================================
 TAXESSAVER.COM — DEVELOPMENT ROADMAP (INDIA — DJANGO STACK)
 Mobile-First | SEO-Optimized | HTMX-Driven | Jinja2 | Indian Tax System
-Updated: 2026-05-29 | Aligned with CLAUDE.md
+Updated: 2026-06-01 | Aligned with CLAUDE.md
 ================================================================================
 
 PROGRESS TRACKER
@@ -81,6 +81,7 @@ PROGRESS TRACKER
 [DONE] Nav — Market-aware nav: India uses /in/* paths, US uses /* paths
 [DONE] Flag — Country switcher always visible (removed hidden sm:flex → flex + border styling)
 [DONE] Hero fix — US home hero uses inline styles (no Tailwind opacity classes), Tailwind rebuilt
+[DONE] Docker deployment — Dockerfile, docker-compose.yml, gunicorn.conf.py, entrypoint.sh, .env.production.example, .dockerignore — ready for live server
 [TODO] Phase 4 — 50 tools, 70 articles, 5L sessions
 [TODO] Phase 5 — Premium tier, CA directory, ₹1L+/mo revenue
 [TODO] Phase 6 (NOW ACTIVE) — US market: more US tools, US blog content, US affiliates live
