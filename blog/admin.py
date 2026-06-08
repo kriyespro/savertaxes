@@ -34,7 +34,7 @@ class AuthorAdmin(admin.ModelAdmin):
 
 @admin.register(AIModelConfig)
 class AIModelConfigAdmin(admin.ModelAdmin):
-    fields = ['keyword_model', 'article_model', 'bulk_model', 'humanize_model', 'articles_per_hour']
+    fields = ['is_paused', 'articles_per_hour', 'keyword_model', 'article_model', 'bulk_model', 'humanize_model']
     readonly_fields = []
 
     def has_add_permission(self, request):
@@ -44,7 +44,6 @@ class AIModelConfigAdmin(admin.ModelAdmin):
         return False
 
     def changelist_view(self, request, extra_context=None):
-        # Redirect list → edit the single config row directly
         obj, _ = AIModelConfig.objects.get_or_create(pk=1)
         from django.http import HttpResponseRedirect
         from django.urls import reverse
@@ -55,11 +54,16 @@ class AIModelConfigAdmin(admin.ModelAdmin):
     def change_view(self, request, object_id, form_url='', extra_context=None):
         extra_context = extra_context or {}
         extra_context['title'] = 'AI Model Configuration'
-        extra_context['subtitle'] = (
-            'Select AI models and autopublish rate. '
-            'Changes apply immediately to the next run. '
-            'Articles Per Hour controls how many articles autopublish generates per cron run.'
-        )
+        obj = AIModelConfig.objects.filter(pk=object_id).first()
+        if obj and obj.is_paused:
+            extra_context['subtitle'] = (
+                '⏸ AUTOPUBLISH IS PAUSED — uncheck "Pause Autopublish" and save to resume.'
+            )
+        else:
+            extra_context['subtitle'] = (
+                'Select AI models and autopublish rate. '
+                'Changes apply immediately to the next run.'
+            )
         return super().change_view(request, object_id, form_url, extra_context)
 
 

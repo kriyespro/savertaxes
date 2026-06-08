@@ -194,6 +194,11 @@ class AIModelConfig(models.Model):
             'E.g. 5 = one article every 12 min. Max 20 recommended.'
         ),
     )
+    is_paused = models.BooleanField(
+        default=False,
+        verbose_name='Pause Autopublish',
+        help_text='When checked, the autopublish command exits immediately without generating any articles.',
+    )
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:

@@ -50,6 +50,12 @@ class Command(BaseCommand):
         from blog.models import AIModelConfig
         cfg = AIModelConfig.get()
 
+        if cfg.is_paused:
+            self.stdout.write(self.style.WARNING(
+                'Autopublish is PAUSED. Uncheck "Pause Autopublish" in AI Config to resume.'
+            ))
+            return
+
         # Rate: read from config, override with --limit / --delay if given
         articles_per_hour = cfg.articles_per_hour or 5
         limit  = options['limit']  if options['limit']  is not None else articles_per_hour
