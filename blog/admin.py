@@ -111,6 +111,39 @@ class KeywordResearchAdmin(admin.ModelAdmin):
     def has_add_permission(self, request):
         return False
 
+    def get_urls(self):
+        from django.urls import path
+        urls = super().get_urls()
+        custom = [
+            path('run-keyword-research/', self.admin_site.admin_view(self.run_keyword_research_view),
+                 name='blog_keywordresearch_run'),
+        ]
+        return custom + urls
+
+    def run_keyword_research_view(self, request):
+        from django.shortcuts import redirect
+        from django.core.management import call_command
+        from django.urls import reverse
+
+        if request.method == 'POST':
+            seed = request.POST.get('seed_keyword', '').strip()
+            market = request.POST.get('market', 'india')
+            if seed:
+                try:
+                    call_command('keyword_research', seed, market=market, verbosity=0)
+                    self.message_user(request, f"✅ Keyword research done for '{seed}' [{market}].")
+                except Exception as exc:
+                    self.message_user(request, f"❌ Failed: {exc}", level=messages.ERROR)
+            else:
+                self.message_user(request, "Seed keyword is required.", level=messages.WARNING)
+        return redirect(reverse('admin:blog_keywordresearch_changelist'))
+
+    def changelist_view(self, request, extra_context=None):
+        from django.urls import reverse
+        extra_context = extra_context or {}
+        extra_context['keyword_research_url'] = reverse('admin:blog_keywordresearch_run')
+        return super().changelist_view(request, extra_context)
+
     @admin.display(description='KD', ordering='kd')
     def kd_badge(self, obj):
         colour = '#22c55e' if obj.kd <= 30 else ('#f59e0b' if obj.kd <= 60 else '#ef4444')
