@@ -118,20 +118,31 @@ DEFAULT_MARKET = 'india'
 LOGIN_URL = '/users/login/'
 LOGIN_REDIRECT_URL = '/'
 
-REDIS_URL = config('REDIS_URL', default='redis://redis:6379/0')
+REDIS_URL = config('REDIS_URL', default='')
 
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
-        'LOCATION': REDIS_URL,
-        'KEY_PREFIX': 'taxessaver',
-        'TIMEOUT': 600,
+if REDIS_URL:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+            'LOCATION': REDIS_URL,
+            'KEY_PREFIX': 'taxessaver',
+            'TIMEOUT': 600,
+        }
     }
-}
+    SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+    SESSION_CACHE_ALIAS = 'default'
+else:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+            'LOCATION': 'taxessaver-local',
+        }
+    }
+    SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 
-SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
-SESSION_CACHE_ALIAS = 'default'
 CACHE_MIDDLEWARE_SECONDS = 600  # 10 min anonymous page cache
+
+OPENROUTER_MODEL = config('OPENROUTER_MODEL', default='google/gemini-2.5-flash')
 
 if SENTRY_DSN:
     import sentry_sdk
