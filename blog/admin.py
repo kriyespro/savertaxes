@@ -34,7 +34,7 @@ class AuthorAdmin(admin.ModelAdmin):
 
 @admin.register(AIModelConfig)
 class AIModelConfigAdmin(admin.ModelAdmin):
-    fields = ['is_paused', 'articles_per_hour', 'keyword_model', 'article_model', 'bulk_model', 'humanize_model']
+    fields = ['is_paused', 'articles_per_day', 'keyword_model', 'article_model', 'bulk_model', 'humanize_model']
     readonly_fields = []
 
     def has_add_permission(self, request):

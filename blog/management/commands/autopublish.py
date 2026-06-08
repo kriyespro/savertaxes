@@ -57,10 +57,10 @@ class Command(BaseCommand):
             return
 
         # Rate: read from config, override with --limit / --delay if given
-        articles_per_hour = cfg.articles_per_hour or 5
-        limit  = options['limit']  if options['limit']  is not None else articles_per_hour
-        # delay = time between article STARTS minus ~180s generation time, min 5s
-        delay  = options['delay']  if options['delay']  is not None else max(5, (3600 // articles_per_hour) - 180)
+        articles_per_day = cfg.articles_per_day or 5
+        limit = options['limit'] if options['limit'] is not None else articles_per_day
+        # delay = seconds between article starts minus ~180s generation time, min 5s
+        delay = options['delay'] if options['delay'] is not None else max(5, (86400 // articles_per_day) - 180)
 
         qs = KeywordResearch.objects.filter(
             article__isnull=True,
@@ -79,7 +79,7 @@ class Command(BaseCommand):
             f"  Priority:        {', '.join(options['priority'])}\n"
             f"  Market:          {options['market'] or 'all'}\n"
             f"  Pipeline:        {'NO — single model' if options['no_pipeline'] else 'YES — 4-step KSV'}\n"
-            f"  Articles/hour:   {articles_per_hour} (from AI Config)\n"
+            f"  Articles/day:    {articles_per_day} (from AI Config)\n"
             f"  Limit this run:  {limit}\n"
             f"  Delay between:   {delay}s\n"
         ))

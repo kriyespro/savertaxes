@@ -185,13 +185,13 @@ class AIModelConfig(models.Model):
         verbose_name='Humanization Model (Pipeline Step 4)',
         help_text='Adds practitioner observations, real-world scenario, removes marketing language',
     )
-    articles_per_hour = models.IntegerField(
+    articles_per_day = models.IntegerField(
         default=5,
-        verbose_name='Articles Per Hour (autopublish rate)',
+        verbose_name='Articles Per Day (autopublish rate)',
         help_text=(
-            'How many articles autopublish generates per cron run. '
-            'Sets the delay between articles: 3600 ÷ this number (seconds). '
-            'E.g. 5 = one article every 12 min. Max 20 recommended.'
+            'How many articles autopublish generates per day. '
+            'Sets the delay between articles: 86400 ÷ this number (seconds). '
+            'E.g. 5 = one article every ~4.8 hours. 1 = one article per day.'
         ),
     )
     is_paused = models.BooleanField(
